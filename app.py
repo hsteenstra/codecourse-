@@ -20,6 +20,9 @@ app.secret_key = "dev-key"
 
 ADMIN_USERNAME = os.environ.get("CODECOURSE_ADMIN_USER", "admin")
 ADMIN_PASSWORD = os.environ.get("CODECOURSE_ADMIN_PASS", "admin123")
+SUPPORT_EMAIL = "codeformaine@gmail.com"
+GMAIL_USER = os.environ.get("CODECOURSE_GMAIL_USER")
+GMAIL_APP_PASS = os.environ.get("CODECOURSE_GMAIL_PASS")
 
 
 # ---------------- DB ----------------
@@ -162,6 +165,7 @@ def init_db():
             user_id INTEGER NOT NULL,
             title TEXT NOT NULL,
             body TEXT NOT NULL,
+            classroom_id INTEGER,
             is_read INTEGER DEFAULT 0,
             created_at TEXT NOT NULL,
             FOREIGN KEY (user_id) REFERENCES users (id)
@@ -194,6 +198,11 @@ def migrate_db():
     if "grade_out_of_10" not in col_names:
         cur.execute("ALTER TABLE assignment_submissions ADD COLUMN grade_out_of_10 INTEGER")
 
+    notif_cols = cur.execute("PRAGMA table_info(notifications)").fetchall()
+    notif_names = {c[1] for c in notif_cols}
+    if "classroom_id" not in notif_names:
+        cur.execute("ALTER TABLE notifications ADD COLUMN classroom_id INTEGER")
+
     conn.commit()
     conn.close()
 
@@ -208,6 +217,11 @@ def load_lessons():
     data_path = DATA_DIR / "lessons.json"
     with open(data_path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+def save_lessons(data: dict):
+    data_path = DATA_DIR / "lessons.json"
+    with open(data_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
 def save_lessons(data: dict):
     data_path = DATA_DIR / "lessons.json"
@@ -235,6 +249,23 @@ def get_lesson(lang_id: str, lesson_id: int):
 
 def all_languages():
     return load_lessons()["languages"]
+
+
+def parse_quiz_text(raw: str):
+    questions = []
+    for line in raw.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        parts = [p.strip() for p in line.split("|")]
+        if len(parts) != 3:
+            continue
+        question, choices_raw, answer = parts
+        choices = [c.strip() for c in choices_raw.split(",") if c.strip()]
+        if len(choices) < 2:
+            continue
+        questions.append({"question": question, "choices": choices, "answer": answer})
+    return questions
 
 
 def parse_quiz_text(raw: str):
@@ -300,14 +331,14 @@ def get_total_xp(user_id: int):
     return total
 
 
-def create_notification(user_id: int, title: str, body: str):
+def create_notification(user_id: int, title: str, body: str, classroom_id: int | None = None):
     conn = get_db()
     conn.execute(
         """
-        INSERT INTO notifications (user_id, title, body, created_at)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO notifications (user_id, title, body, classroom_id, created_at)
+        VALUES (?, ?, ?, ?, ?)
         """,
-        (user_id, title, body, now_ts()),
+        (user_id, title, body, classroom_id, now_ts()),
     )
     conn.commit()
     conn.close()
@@ -323,6 +354,23 @@ def get_unread_notifications(user_id: int):
         LIMIT 3
         """,
         (user_id,),
+    ).fetchall()
+    conn.close()
+    return rows
+
+
+def get_classroom_stream(classroom_id: int):
+    conn = get_db()
+    rows = conn.execute(
+        """
+        SELECT n.*, u.name as teacher_name
+        FROM notifications n
+        LEFT JOIN users u ON u.id = n.user_id
+        WHERE n.classroom_id = ?
+        ORDER BY n.created_at DESC
+        LIMIT 15
+        """,
+        (classroom_id,),
     ).fetchall()
     conn.close()
     return rows
@@ -1002,10 +1050,16 @@ def student_classroom():
     conn.commit()
     conn.close()
 
+    stream_items = []
+    for c in classrooms:
+        stream_items.extend(get_classroom_stream(c["id"]))
+    stream_items = sorted(stream_items, key=lambda r: r["created_at"], reverse=True)[:20]
+
     return render_template(
         "student_classroom.html",
         classrooms=classrooms,
         assignments=updated_assignments,
+        stream_items=stream_items,
     )
 
 
@@ -1233,6 +1287,8 @@ def teacher_classroom(classroom_id):
 
     conn.close()
 
+    stream_items = get_classroom_stream(classroom_id)
+
     return render_template(
         "teacher_classroom.html",
         classroom=classroom,
@@ -1241,6 +1297,7 @@ def teacher_classroom(classroom_id):
         submissions=submissions,
         invites=invites,
         comments=comments,
+        stream_items=stream_items,
         languages=all_languages(),
     )
 
@@ -1294,6 +1351,7 @@ def teacher_create_assignment(classroom_id):
             student["student_id"],
             "New assignment posted",
             f"{lesson_lang.upper()} Lesson {lesson_id} is ready in {classroom['name']}.",
+            classroom_id=classroom_id,
         )
 
     return redirect(url_for("teacher_classroom", classroom_id=classroom_id))
@@ -1382,6 +1440,7 @@ def teacher_grade_submission(submission_id):
         submission["student_id"],
         "Assignment graded",
         f"{submission['lesson_lang'].upper()} Lesson {submission['lesson_id']} graded: {grade_val}/10.",
+        classroom_id=submission["classroom_id"],
     )
 
     flash("Grade saved.")
@@ -1430,6 +1489,32 @@ def reach_out():
         )
         conn.commit()
         conn.close()
+
+        # Optional email send (Gmail App Password)
+        if GMAIL_USER and GMAIL_APP_PASS:
+            try:
+                import smtplib
+                from email.message import EmailMessage
+
+                msg = EmailMessage()
+                msg["Subject"] = "CodeCourse Reach Out"
+                msg["From"] = GMAIL_USER
+                msg["To"] = SUPPORT_EMAIL
+                msg.set_content(
+                    f"From: {session.get('name')} ({role})\n"
+                    f"Email: {get_user(user_id)['email'] if user_id else 'N/A'}\n\n"
+                    f"Message:\n{message}\n\n"
+                    f"Photo URL: {photo_url or 'N/A'}"
+                )
+
+                with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+                    smtp.login(GMAIL_USER, GMAIL_APP_PASS)
+                    smtp.send_message(msg)
+            except Exception:
+                flash("Message saved, but email sending is not configured yet.")
+        else:
+            flash("Message saved. Email sending is not configured yet.")
+
         flash("Thanks! Your message was sent.")
         return redirect(url_for("reach_out"))
 

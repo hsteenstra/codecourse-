@@ -566,6 +566,27 @@ mark {
     gap: 2rem;
 }
 
+.stream-card {
+    border: 1px solid rgba(127,90,240,0.35);
+}
+
+.stream-list {
+    display: grid;
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.stream-item {
+    padding: 1rem;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.08);
+}
+
+.stream-title {
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+}
+
 .class-sidebar .card {
     margin-bottom: 1.5rem;
 }

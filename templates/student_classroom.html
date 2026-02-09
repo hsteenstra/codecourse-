@@ -10,6 +10,21 @@
 
 <div class="classroom-layout">
   <div class="stream">
+    {% if stream_items %}
+      <div class="card stream-card">
+        <h2>Classroom Stream</h2>
+        <div class="stream-list">
+          {% for item in stream_items %}
+            <div class="stream-item">
+              <div class="stream-title">{{ item.title }}</div>
+              <div class="stream-body">{{ item.body }}</div>
+              <div class="muted">{{ item.created_at }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
     <div class="card assignment-card">
       <h2>Assignments</h2>
       {% if assignments %}
