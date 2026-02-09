@@ -20,6 +20,9 @@
       <div class="stat-label">Assignments</div>
       <div class="stat-value">{{ assignments|length }}</div>
     </div>
+    <form method="post" action="/teacher/classroom/{{ classroom.id }}/delete" onsubmit="return confirm('Delete this classroom? This cannot be undone.');">
+      <button class="secondary">Delete Class</button>
+    </form>
   </div>
 </section>
 

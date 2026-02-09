@@ -1360,6 +1360,43 @@ def teacher_classroom(classroom_id):
     )
 
 
+@app.route("/teacher/classroom/<int:classroom_id>/delete", methods=["POST"])
+def teacher_delete_classroom(classroom_id):
+    guard = require_login()
+    if guard:
+        return guard
+    if require_role("Teacher"):
+        return redirect(url_for("student_home"))
+
+    conn = get_db()
+    classroom = conn.execute(
+        "SELECT * FROM classrooms WHERE id = ? AND teacher_id = ?",
+        (classroom_id, session["user_id"]),
+    ).fetchone()
+    if not classroom:
+        conn.close()
+        flash("Classroom not found.")
+        return redirect(url_for("teacher_home"))
+
+    assignment_ids = conn.execute(
+        "SELECT id FROM assignments WHERE classroom_id = ?",
+        (classroom_id,),
+    ).fetchall()
+    for a in assignment_ids:
+        conn.execute("DELETE FROM assignment_submissions WHERE assignment_id = ?", (a["id"],))
+
+    conn.execute("DELETE FROM assignments WHERE classroom_id = ?", (classroom_id,))
+    conn.execute("DELETE FROM classroom_students WHERE classroom_id = ?", (classroom_id,))
+    conn.execute("DELETE FROM classroom_invites WHERE classroom_id = ?", (classroom_id,))
+    conn.execute("DELETE FROM notifications WHERE classroom_id = ?", (classroom_id,))
+    conn.execute("DELETE FROM classrooms WHERE id = ?", (classroom_id,))
+    conn.commit()
+    conn.close()
+
+    flash("Classroom deleted.")
+    return redirect(url_for("teacher_home"))
+
+
 @app.route("/teacher/classroom/<int:classroom_id>/assignments/create", methods=["POST"])
 def teacher_create_assignment(classroom_id):
     guard = require_login()
