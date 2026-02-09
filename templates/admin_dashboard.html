@@ -73,6 +73,18 @@
           <span class="pill">Lessons: {{ lang.lessons|length }}</span>
         </div>
       </div>
+      {% if lang.lessons %}
+        <div class="lesson-edit-list">
+          {% for lesson in lang.lessons %}
+            <div class="lesson-edit-row">
+              <div>
+                <strong>Lesson {{ lesson.id }}:</strong> {{ lesson.title }}
+              </div>
+              <a href="/admin/lesson/{{ lang.id }}/{{ lesson.id }}" class="external-link">Edit</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
     {% endfor %}
   </div>
 </div>

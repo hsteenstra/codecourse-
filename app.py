@@ -268,6 +268,14 @@ def parse_quiz_text(raw: str):
     return questions
 
 
+def quiz_to_text(quiz: list[dict]):
+    lines = []
+    for q in quiz:
+        choices = ", ".join(q["choices"])
+        lines.append(f"{q['question']} | {choices} | {q['answer']}")
+    return "\n".join(lines)
+
+
 def parse_quiz_text(raw: str):
     questions = []
     for line in raw.splitlines():
@@ -646,6 +654,56 @@ def admin_toggle_language():
     save_lessons(data)
     flash("Language updated.")
     return redirect(url_for("admin_dashboard"))
+
+
+@app.route("/admin/lesson/<lang_id>/<int:lesson_id>", methods=["GET", "POST"])
+def admin_edit_lesson(lang_id, lesson_id):
+    if session.get("role") != "Admin":
+        return redirect(url_for("admin_login"))
+
+    data = load_lessons()
+    lang = next((l for l in data["languages"] if l["id"] == lang_id), None)
+    if not lang:
+        flash("Language not found.")
+        return redirect(url_for("admin_dashboard"))
+
+    lesson = next((l for l in lang["lessons"] if l["id"] == lesson_id), None)
+    if not lesson:
+        flash("Lesson not found.")
+        return redirect(url_for("admin_dashboard"))
+
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        xp = int(request.form.get("xp") or 100)
+        reading = request.form.get("reading", "").strip()
+        video_url = request.form.get("video_url", "").strip()
+        quiz_text = request.form.get("quiz_text", "").strip()
+
+        if not title or not reading or not quiz_text:
+            flash("Please fill out title, reading, and quiz.")
+            return redirect(url_for("admin_edit_lesson", lang_id=lang_id, lesson_id=lesson_id))
+
+        quiz = parse_quiz_text(quiz_text)
+        if not quiz:
+            flash("Quiz format invalid. Use: Question | A,B,C,D | Answer")
+            return redirect(url_for("admin_edit_lesson", lang_id=lang_id, lesson_id=lesson_id))
+
+        lesson["title"] = title
+        lesson["xp"] = xp
+        lesson["reading"] = reading
+        lesson["video_url"] = video_url
+        lesson["quiz"] = quiz
+
+        save_lessons(data)
+        flash("Lesson updated.")
+        return redirect(url_for("admin_dashboard"))
+
+    return render_template(
+        "admin_edit_lesson.html",
+        lang=lang,
+        lesson=lesson,
+        quiz_text=quiz_to_text(lesson["quiz"]),
+    )
 
 
 @app.route("/logout")
