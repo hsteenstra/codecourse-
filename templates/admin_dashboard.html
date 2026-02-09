@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero">
+  <div>
+    <h1>Admin Dashboard</h1>
+    <p class="subtitle">Add lessons, manage languages, and keep your content organized.</p>
+  </div>
+</section>
+
+<div class="admin-layout">
+  <div class="card">
+    <h2>Add Lesson</h2>
+    <form method="post" action="/admin/lesson/create" class="assignment-form">
+      <select name="lang_id" required>
+        <option disabled selected>Select language</option>
+        {% for lang in languages %}
+          <option value="{{ lang.id }}">{{ lang.name }}</option>
+        {% endfor %}
+      </select>
+      <input name="title" placeholder="Lesson title" required>
+      <input name="xp" type="number" min="50" max="400" placeholder="XP (e.g., 150)">
+      <textarea name="reading" rows="6" placeholder="Reading content" required></textarea>
+      <input name="video_url" placeholder="Video embed URL (optional)">
+      <textarea name="quiz_text" rows="8" placeholder="Quiz format: Question | A,B,C,D | Answer\nExample:\nWhat is Python? | A language, A game, A food, A car | A language" required></textarea>
+      <button class="primary">Add Lesson</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Add Language</h2>
+    <form method="post" action="/admin/language/create" class="assignment-form">
+      <input name="lang_id" placeholder="Language id (e.g., rust)" required>
+      <input name="name" placeholder="Language name" required>
+      <input name="description" placeholder="Short description">
+      <label class="checkbox">
+        <input type="checkbox" name="enabled">
+        Enable immediately
+      </label>
+      <button class="secondary">Add Language</button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Toggle Languages</h2>
+  <form method="post" action="/admin/language/toggle" class="assignment-form">
+    <select name="lang_id" required>
+      <option disabled selected>Select language</option>
+      {% for lang in languages %}
+        <option value="{{ lang.id }}">{{ lang.name }}</option>
+      {% endfor %}
+    </select>
+    <label class="checkbox">
+      <input type="checkbox" name="enabled">
+      Enable this language
+    </label>
+    <button class="secondary">Update Language</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Current Tracks</h2>
+  <div class="assignment-list">
+    {% for lang in languages %}
+      <div class="assignment-row">
+        <div>
+          <h3>{{ lang.name }}</h3>
+          <p class="muted">ID: {{ lang.id }}</p>
+        </div>
+        <div class="assignment-actions">
+          <span class="pill {{ 'active' if lang.enabled else 'locked' }}">{{ 'Enabled' if lang.enabled else 'Disabled' }}</span>
+          <span class="pill">Lessons: {{ lang.lessons|length }}</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

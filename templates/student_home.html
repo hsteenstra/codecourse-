@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero">
+  <div>
+    <h1>Welcome, {{ name }}</h1>
+  <p class="subtitle">Your learning path starts here. Pick a language, keep your streak, and build real coding confidence.</p>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-card">
+      <div class="stat-label">Total XP</div>
+      <div class="stat-value">{{ total_xp }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Streak</div>
+      <div class="stat-value">{{ streak }} days</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Badges</div>
+      <div class="stat-value">{{ badges|length }}</div>
+    </div>
+  </div>
+</section>
+
+{% if notifications %}
+<section class="card notify-card">
+  <h2>Notifications</h2>
+  <ul class="notify-list">
+    {% for n in notifications %}
+      <li>
+        <strong>{{ n.title }}</strong><br>
+        {{ n.body }}
+      </li>
+    {% endfor %}
+  </ul>
+  <form method="post" action="/notifications/read">
+    <button class="secondary">Mark all as read</button>
+  </form>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>Your Badges</h2>
+  {% if badges %}
+    <div class="badge-row">
+      {% for badge in badges %}
+        <div class="badge">{{ badge }}</div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">Complete your first lesson to unlock badges.</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>About Code For ME</h2>
+  <p>Code For ME empowers students with a clear, motivating path into programming. CodeCourse blends bite‑sized reading, videos, and quizzes with classroom tools for teachers. Learn at your pace, track your growth, and celebrate every milestone.</p>
+  <a href="https://codeforme.org" class="external-link" target="_blank" rel="noopener">Visit codeforme.org</a>
+</section>
+
+<section>
+  <h2>Pick a language</h2>
+  <div class="grid">
+    {% for lang in languages %}
+      {% if lang.enabled %}
+        <a href="/student/language/{{ lang.id }}" class="tile">
+          <h3>{{ lang.name }}</h3>
+          <p>{{ lang.description }}</p>
+          <div class="progress">
+            <div class="progress-bar" style="width: {{ lang.percent }}%"></div>
+          </div>
+          <div class="progress-label {{ 'complete' if lang.complete else '' }}">
+            {{ lang.percent }}% complete
+          </div>
+        </a>
+      {% else %}
+        <div class="tile locked">
+          <h3>{{ lang.name }}</h3>
+          <p>{{ lang.description }}</p>
+          <div class="progress">
+            <div class="progress-bar" style="width: 0%"></div>
+          </div>
+          <div class="progress-label">Coming soon</div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

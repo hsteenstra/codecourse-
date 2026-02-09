@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="language-hero">
+  <div>
+    <h1>{{ lang.name }} Path</h1>
+    <p class="subtitle">Complete each bubble to unlock the next lesson.</p>
+  </div>
+  <div class="language-meta">
+    <div class="meta-chip">Lessons: {{ lang.lessons|length }}</div>
+    <div class="meta-chip">Track: {{ lang.name }} Basics</div>
+  </div>
+</section>
+
+<div class="roadmap">
+  {% for lesson in lang.lessons %}
+    {% if lesson.id in completed %}
+      <div class="bubble completed">{{ lesson.id }}</div>
+    {% elif lesson.id == (completed|length + 1) %}
+      <a href="/student/lesson/{{ lang.id }}/{{ lesson.id }}" class="bubble active">{{ lesson.id }}</a>
+    {% else %}
+      <div class="bubble locked">{{ lesson.id }}</div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<div class="lesson-list">
+  {% for lesson in lang.lessons %}
+    <div class="lesson-row">
+      <div>
+        <h3>{{ lesson.title }}</h3>
+        <p class="muted">XP: {{ lesson.xp }}</p>
+      </div>
+      {% if lesson.id in completed %}
+        <span class="pill completed">Completed</span>
+      {% elif lesson.id == (completed|length + 1) %}
+        <a href="/student/lesson/{{ lang.id }}/{{ lesson.id }}" class="pill active">Start</a>
+      {% else %}
+        <span class="pill locked">Locked</span>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+
+{% if completed|length == lang.lessons|length %}
+<div class="card certificate-callout">
+  <h2>Certificate Ready</h2>
+  <p>You completed all lessons. Download your certificate!</p>
+  <a href="/student/language/{{ lang.id }}/certificate"><button class="primary">View Certificate</button></a>
+</div>
+{% endif %}
+
+{% endblock %}

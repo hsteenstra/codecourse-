@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero">
+  <div>
+    <h1>Welcome, {{ name }}</h1>
+    <p class="subtitle">Create classrooms, assign lessons, and track progress at a glance.</p>
+  </div>
+  <a href="/teacher/classroom/create"><button class="primary">Create Classroom</button></a>
+</section>
+
+{% if notifications %}
+<section class="card notify-card">
+  <h2>Notifications</h2>
+  <ul class="notify-list">
+    {% for n in notifications %}
+      <li>
+        <strong>{{ n.title }}</strong><br>
+        {{ n.body }}
+      </li>
+    {% endfor %}
+  </ul>
+  <form method="post" action="/notifications/read">
+    <button class="secondary">Mark all as read</button>
+  </form>
+</section>
+{% endif %}
+
+<section class="card">
+  <h2>Teacher Toolkit</h2>
+  <ul class="feature-list">
+    <li>Assign lessons with due dates and notes</li>
+    <li>Track completion and quiz scores automatically</li>
+    <li>Invite students by email and share class codes</li>
+  </ul>
+</section>
+
+{% if classrooms %}
+  <div class="grid">
+    {% for c in classrooms %}
+      <a class="tile" href="/teacher/classroom/{{ c.id }}">
+        <h3>{{ c.name }}</h3>
+        <p class="muted">Code: {{ c.code }}</p>
+      </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="muted">No classrooms yet. Create one to get started.</p>
+{% endif %}
+
+{% endblock %}

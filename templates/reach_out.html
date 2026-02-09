@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card center">
+  <h1>Reach Out to Code For ME</h1>
+  <p class="subtitle">Send questions, feedback, or share classroom wins.</p>
+  <form method="post">
+    <textarea name="message" placeholder="Your message" rows="6" required></textarea>
+    <input name="photo_url" placeholder="Optional classroom photo URL (teachers)">
+    <button class="primary">Send</button>
+  </form>
+</div>
+
+{% endblock %}

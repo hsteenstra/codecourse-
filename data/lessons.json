@@ -1,0 +1,509 @@
+{
+  "languages": [
+    {
+      "id": "python",
+      "name": "Python",
+      "description": "Build foundations with readable, powerful code.",
+      "enabled": true,
+      "lessons": [
+        {
+          "id": 1,
+          "title": "Python Basics 1: What Is Python?",
+          "xp": 100,
+          "reading": "Python is a beginner-friendly programming language used for web apps, data science, AI, automation, and more. It focuses on readability, which means your code should look almost like plain English.\n\nA Python program is a series of instructions. You can start by using the built-in print() function to show output on the screen. Comments (lines that start with #) let you explain your code without changing how it runs. Indentation matters in Python—spaces define blocks of code instead of curly braces.\n\nIn this course, you will build skills step-by-step, from printing and variables to loops and functions. Take your time, read closely, and practice each mini-quiz to unlock the next lesson.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Python is known for:", "choices": ["Being hard to read", "Readability and simplicity", "Only running on phones", "Using curly braces for blocks"], "answer": "Readability and simplicity"},
+            {"question": "Which function prints text to the screen?", "choices": ["echo()", "print()", "say()", "display()"], "answer": "print()"},
+            {"question": "A comment in Python starts with:", "choices": ["//", "#", "/*", "--"], "answer": "#"},
+            {"question": "Python uses indentation to:", "choices": ["Make code run faster", "Define code blocks", "Create files", "Name variables"], "answer": "Define code blocks"},
+            {"question": "Which is a valid Python statement?", "choices": ["print('Hello')", "printf('Hello')", "print Hello", "println('Hello')"], "answer": "print('Hello')"},
+            {"question": "Python is commonly used for:", "choices": ["Automation scripts", "Data science", "Web development", "All of the above"], "answer": "All of the above"},
+            {"question": "A Python program is made of:", "choices": ["Spreadsheets", "Instructions", "Images", "Servers"], "answer": "Instructions"},
+            {"question": "What is the purpose of comments?", "choices": ["Change program output", "Explain code", "Delete files", "Run faster"], "answer": "Explain code"},
+            {"question": "Which is NOT a typical Python use case?", "choices": ["AI", "Web apps", "Data analysis", "Cooking recipes"], "answer": "Cooking recipes"},
+            {"question": "Indentation in Python is:", "choices": ["Optional", "Required", "Only for long lines", "Only for comments"], "answer": "Required"}
+          ]
+        },
+        {
+          "id": 2,
+          "title": "Python Basics 2: Variables & Data Types",
+          "xp": 120,
+          "reading": "Variables store data so you can reuse it later. In Python, you create a variable by giving it a name and assigning a value with =. For example, name = 'Alex' or age = 16.\n\nPython has common data types: strings (text), integers (whole numbers), floats (decimals), and booleans (True/False). You can check the type of a value with type().\n\nUser input comes in as a string. You can convert it to a number using int() or float(). Good variable names are clear and descriptive. Avoid spaces, use lowercase, and separate words with underscores.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Which line creates a variable?", "choices": ["var age = 16", "age = 16", "int age = 16", "let age = 16"], "answer": "age = 16"},
+            {"question": "A string is:", "choices": ["A whole number", "Text", "A decimal", "A boolean"], "answer": "Text"},
+            {"question": "Which value is a boolean?", "choices": ["'True'", "True", "1", "'yes'"], "answer": "True"},
+            {"question": "Input from input() is always:", "choices": ["An integer", "A float", "A string", "A boolean"], "answer": "A string"},
+            {"question": "Which converts a string to an integer?", "choices": ["float()", "int()", "str()", "bool()"], "answer": "int()"},
+            {"question": "Which is a valid variable name?", "choices": ["2name", "user-name", "user_name", "user name"], "answer": "user_name"},
+            {"question": "What does type(3.14) return?", "choices": ["int", "float", "str", "bool"], "answer": "float"},
+            {"question": "Which is an integer?", "choices": ["3", "3.0", "'3'", "True"], "answer": "3"},
+            {"question": "Which creates a string?", "choices": ["'hello'", "hello", "True", "5"], "answer": "'hello'"},
+            {"question": "Why use variables?", "choices": ["To store and reuse data", "To delete files", "To speed up internet", "To format text"], "answer": "To store and reuse data"}
+          ]
+        },
+        {
+          "id": 3,
+          "title": "Python Basics 3: Conditionals",
+          "xp": 140,
+          "reading": "Conditionals let your program make decisions. The main keywords are if, elif, and else. Python checks the condition after if; if it is True, that block runs. Otherwise it checks elif, and if none are True, else runs.\n\nComparisons use operators like == (equal), != (not equal), >, <, >=, and <=. Combine conditions with and / or. Indentation defines what code belongs inside each block.\n\nConditionals are essential for creating interactive programs, like checking a user's age or validating a password.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Which keyword starts a conditional?", "choices": ["if", "loop", "func", "when"], "answer": "if"},
+            {"question": "Which operator checks equality?", "choices": ["=", "==", "!=", "<"], "answer": "=="},
+            {"question": "Which keyword handles the fallback case?", "choices": ["elif", "else", "then", "case"], "answer": "else"},
+            {"question": "What does != mean?", "choices": ["equal", "not equal", "greater than", "less than"], "answer": "not equal"},
+            {"question": "Which combines two conditions and requires both to be True?", "choices": ["or", "and", "not", "xor"], "answer": "and"},
+            {"question": "Which combines two conditions and requires at least one to be True?", "choices": ["or", "and", "not", "=="], "answer": "or"},
+            {"question": "Indentation is used to:", "choices": ["Decorate code", "Define blocks", "Make comments", "Skip execution"], "answer": "Define blocks"},
+            {"question": "Which is a valid conditional line?", "choices": ["if x = 5:", "if x == 5:", "if x === 5:", "if (x == 5)"], "answer": "if x == 5:"},
+            {"question": "elif stands for:", "choices": ["else if", "end if", "equal if", "evaluate if"], "answer": "else if"},
+            {"question": "Which value makes an if block run?", "choices": ["False", "0", "True", "None"], "answer": "True"}
+          ]
+        },
+        {
+          "id": 4,
+          "title": "Python Basics 4: Loops",
+          "xp": 160,
+          "reading": "Loops repeat code. Use a for loop when you know how many times to repeat, and a while loop when you repeat until a condition changes.\n\nA common pattern is for i in range(5), which runs 5 times. In a while loop, update the condition so you don't create an infinite loop.\n\nLoops help you automate repetitive tasks like processing a list of names or counting numbers.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Which loop is best when you know the number of repetitions?", "choices": ["for", "while", "if", "elif"], "answer": "for"},
+            {"question": "Which loop is best when you repeat until a condition changes?", "choices": ["for", "while", "if", "def"], "answer": "while"},
+            {"question": "range(5) produces:", "choices": ["1 to 5", "0 to 4", "0 to 5", "1 to 4"], "answer": "0 to 4"},
+            {"question": "What can happen if you forget to update the condition in a while loop?", "choices": ["Syntax error", "Infinite loop", "Program runs faster", "Loop runs once"], "answer": "Infinite loop"},
+            {"question": "Which is a valid for loop header?", "choices": ["for i in range(3):", "for (i=0; i<3; i++)", "foreach i in range(3)", "loop i 3"], "answer": "for i in range(3):"},
+            {"question": "What keyword exits a loop early?", "choices": ["skip", "exit", "break", "stop"], "answer": "break"},
+            {"question": "What keyword skips to the next loop iteration?", "choices": ["continue", "break", "return", "pass"], "answer": "continue"},
+            {"question": "A loop repeats code to:", "choices": ["Avoid repetition", "Make code slower", "Remove variables", "Stop programs"], "answer": "Avoid repetition"},
+            {"question": "Which loop is commonly used with lists?", "choices": ["for", "while", "if", "def"], "answer": "for"},
+            {"question": "Which is an infinite loop?", "choices": ["while True:", "for i in range(3):", "for i in [1,2]", "while i < 3"], "answer": "while True:"}
+          ]
+        },
+        {
+          "id": 5,
+          "title": "Python Basics 5: Functions",
+          "xp": 180,
+          "reading": "Functions are reusable blocks of code. You define one using def, give it a name, and add parameters for inputs. Functions can return a value using return.\n\nExample:\n\ndef greet(name):\n    return \"Hello \" + name\n\nFunctions reduce repetition and make your programs easier to read. Scope matters: variables defined inside a function are local to that function.\n\nAs your projects grow, functions help you organize your ideas into clear steps.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Which keyword defines a function?", "choices": ["func", "def", "function", "define"], "answer": "def"},
+            {"question": "What does return do?", "choices": ["Prints text", "Stops the program", "Sends a value back", "Adds a loop"], "answer": "Sends a value back"},
+            {"question": "Parameters are:", "choices": ["Inputs to a function", "Outputs of a function", "Loops", "Comments"], "answer": "Inputs to a function"},
+            {"question": "Which is a valid function definition?", "choices": ["def greet(name):", "function greet(name)", "func greet(name)", "def greet = name"], "answer": "def greet(name):"},
+            {"question": "What is scope?", "choices": ["The size of a screen", "Where a variable can be used", "A data type", "A loop"], "answer": "Where a variable can be used"},
+            {"question": "A function helps you:", "choices": ["Repeat code without copying", "Only use global variables", "Remove indentation", "Avoid variables"], "answer": "Repeat code without copying"},
+            {"question": "Which statement returns a value?", "choices": ["return x", "print x", "input x", "def x"], "answer": "return x"},
+            {"question": "A local variable exists:", "choices": ["Only inside the function", "Everywhere", "Only in loops", "Only in files"], "answer": "Only inside the function"},
+            {"question": "How do you call a function named add?", "choices": ["call add", "add()", "add[]", "add"], "answer": "add()"},
+            {"question": "Which makes code easier to read and organize?", "choices": ["Functions", "Bugs", "Typos", "Infinite loops"], "answer": "Functions"}
+          ]
+        },
+        {
+          "id": 6,
+          "title": "Python Basics 6: Lists",
+          "xp": 160,
+          "reading": "Lists store multiple items in one variable. Use square brackets: colors = ['red', 'blue', 'green']. You can access items by index, starting at 0.\n\nLists are mutable, so you can change, add, or remove items using methods like append(), insert(), and remove().\n\nLists are perfect for collections of data like scores, names, or tasks.",
+          "video_url": "",
+          "quiz": [
+            {"question": "A list uses:", "choices": ["()", "[]", "{}", "<>"], "answer": "[]"},
+            {"question": "The first item index is:", "choices": ["1", "0", "-1", "2"], "answer": "0"},
+            {"question": "Which adds an item to the end of a list?", "choices": ["append()", "add()", "push()", "insert()"], "answer": "append()"},
+            {"question": "Which removes an item by value?", "choices": ["remove()", "pop()", "del()", "clear()"], "answer": "remove()"},
+            {"question": "Lists are:", "choices": ["Mutable", "Immutable", "Only numbers", "Only strings"], "answer": "Mutable"},
+            {"question": "Which gets the last item?", "choices": ["list[0]", "list[-1]", "list[last]", "list[end]"], "answer": "list[-1]"},
+            {"question": "Which inserts at a specific position?", "choices": ["insert()", "append()", "extend()", "replace()"], "answer": "insert()"},
+            {"question": "Which returns the number of items?", "choices": ["count()", "len()", "size()", "items()"], "answer": "len()"},
+            {"question": "Which removes and returns the last item?", "choices": ["pop()", "remove()", "delete()", "cut()"], "answer": "pop()"},
+            {"question": "Lists are useful for:", "choices": ["Collections of data", "Single numbers", "Only booleans", "Passwords"], "answer": "Collections of data"}
+          ]
+        },
+        {
+          "id": 7,
+          "title": "Python Basics 7: Tuples",
+          "xp": 140,
+          "reading": "Tuples are like lists but immutable (cannot be changed). Use parentheses: point = (3, 5). They are great for fixed data that shouldn't change.\n\nYou can access tuple items by index just like lists. Use tuples for coordinates, RGB colors, or returning multiple values from a function.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Tuples use:", "choices": ["()", "[]", "{}", "<>"], "answer": "()"},
+            {"question": "Tuples are:", "choices": ["Mutable", "Immutable", "Only numbers", "Only strings"], "answer": "Immutable"},
+            {"question": "Which can be a tuple?", "choices": ["(1, 2)", "[1, 2]", "{1, 2}", "<1, 2>"], "answer": "(1, 2)"},
+            {"question": "Tuples are useful for:", "choices": ["Fixed collections", "Dynamic lists", "Sorting files", "Printing"], "answer": "Fixed collections"},
+            {"question": "Access the first item with:", "choices": ["tuple[0]", "tuple[1]", "tuple.first", "tuple.get(0)"], "answer": "tuple[0]"},
+            {"question": "Which is a tuple of strings?", "choices": ["('a','b')", "['a','b']", "{'a','b'}", "<a,b>"], "answer": "('a','b')"},
+            {"question": "Can tuples be changed?", "choices": ["Yes", "No", "Only sometimes", "Only with loops"], "answer": "No"},
+            {"question": "What does len() return for a tuple?", "choices": ["Length", "Type", "Index", "Value"], "answer": "Length"},
+            {"question": "Which returns multiple values easily?", "choices": ["Tuples", "Files", "Loops", "Imports"], "answer": "Tuples"},
+            {"question": "Tuples are created with:", "choices": ["Parentheses", "Brackets", "Braces", "Quotes"], "answer": "Parentheses"}
+          ]
+        },
+        {
+          "id": 8,
+          "title": "Python Basics 8: Dictionaries",
+          "xp": 180,
+          "reading": "Dictionaries store key-value pairs. Use braces: student = {'name': 'Maya', 'grade': 95}. Keys are unique.\n\nAccess values with student['name'] or use get(). Add new key-value pairs by assignment. Dictionaries are great for structured data like user profiles.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Dictionaries use:", "choices": ["{}", "[]", "()", "<>"], "answer": "{}"},
+            {"question": "A dictionary stores:", "choices": ["Key-value pairs", "Only lists", "Only tuples", "Only numbers"], "answer": "Key-value pairs"},
+            {"question": "Which accesses a value?", "choices": ["dict['key']", "dict.key", "dict(key)", "dict->key"], "answer": "dict['key']"},
+            {"question": "Keys in a dict are:", "choices": ["Unique", "Duplicate", "Lists", "Mutable"], "answer": "Unique"},
+            {"question": "Which adds a new key?", "choices": ["dict['new'] = 1", "add(dict)", "append()", "insert()"], "answer": "dict['new'] = 1"},
+            {"question": "Which method safely gets a value?", "choices": ["get()", "safe()", "find()", "value()"], "answer": "get()"},
+            {"question": "Dictionary keys are usually:", "choices": ["Strings", "Loops", "Files", "Functions"], "answer": "Strings"},
+            {"question": "Which is a valid dict?", "choices": ["{'a':1}", "['a':1]", "('a':1)", "<a:1>"], "answer": "{'a':1}"},
+            {"question": "Dictionaries are good for:", "choices": ["Profiles", "Single numbers", "Only lists", "Only booleans"], "answer": "Profiles"},
+            {"question": "What happens if a key doesn't exist?", "choices": ["Error", "Nothing", "It auto-creates", "It deletes"], "answer": "Error"}
+          ]
+        },
+        {
+          "id": 9,
+          "title": "Python Basics 9: Strings",
+          "xp": 150,
+          "reading": "Strings are text. You can join them, slice them, and format them. Use f-strings for clean formatting: f\"\"Hello {name}\"\".\n\nUseful string methods include .lower(), .upper(), .strip(), and .replace().\n\nStrings are everywhere in apps, from user input to file content.",
+          "video_url": "",
+          "quiz": [
+            {"question": "A string is:", "choices": ["Text", "Number", "List", "Loop"], "answer": "Text"},
+            {"question": "Which joins strings?", "choices": ["+", "-", "*", "/"], "answer": "+"},
+            {"question": "Which is an f-string?", "choices": ["f'Hi {name}'", "'Hi {name}'", "format{Hi}", "string(Hi)"], "answer": "f'Hi {name}'"},
+            {"question": "Which method removes spaces?", "choices": ["strip()", "trim()", "cut()", "slice()"], "answer": "strip()"},
+            {"question": "Which turns text uppercase?", "choices": ["upper()", "capitalize()", "raise()", "loud()"], "answer": "upper()"},
+            {"question": "Which replaces text?", "choices": ["replace()", "swap()", "change()", "edit()"], "answer": "replace()"},
+            {"question": "Which slices a string?", "choices": ["text[0:3]", "slice(text)", "cut(text)", "split(text)"], "answer": "text[0:3]"},
+            {"question": "Strings are:", "choices": ["Immutable", "Mutable", "Only numbers", "Only lists"], "answer": "Immutable"},
+            {"question": "Which gets string length?", "choices": ["len()", "size()", "count()", "length()"], "answer": "len()"},
+            {"question": "Which splits a string?", "choices": ["split()", "slice()", "divide()", "break()"], "answer": "split()"}
+          ]
+        },
+        {
+          "id": 10,
+          "title": "Python Basics 10: Numbers & Math",
+          "xp": 150,
+          "reading": "Python can handle integers and floats. You can add, subtract, multiply, and divide. Use // for floor division and % for remainder.\n\nThe math module adds extra power like sqrt() and pi. Always convert user input to numbers before doing math.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Which is floor division?", "choices": ["/", "//", "%", "**"], "answer": "//"},
+            {"question": "Which gives remainder?", "choices": ["%", "//", "+", "**"], "answer": "%"},
+            {"question": "Which is exponent?", "choices": ["**", "^", "exp()", "pow()"], "answer": "**"},
+            {"question": "math.sqrt(9) is:", "choices": ["3", "9", "81", "2"], "answer": "3"},
+            {"question": "Which is a float?", "choices": ["3.14", "3", "'3'", "True"], "answer": "3.14"},
+            {"question": "Which converts to int?", "choices": ["int()", "float()", "str()", "bool()"], "answer": "int()"},
+            {"question": "Which is division?", "choices": ["/", "-", "+", "*"], "answer": "/"},
+            {"question": "Which module provides pi?", "choices": ["math", "random", "time", "sys"], "answer": "math"},
+            {"question": "Which rounds down?", "choices": ["//", "/", "%", "**"], "answer": "//"},
+            {"question": "Which is a valid expression?", "choices": ["5 % 2", "5 %% 2", "5 mod 2", "mod(5,2)"], "answer": "5 % 2"}
+          ]
+        },
+        {
+          "id": 11,
+          "title": "Python Basics 11: Input & Output",
+          "xp": 140,
+          "reading": "Use input() to collect user text. Convert to numbers with int() or float(). Use print() to show results.\n\nYou can format output using f-strings, like f\"\"Total: {total}\"\".",
+          "video_url": "",
+          "quiz": [
+            {"question": "input() returns:", "choices": ["String", "Integer", "Float", "Boolean"], "answer": "String"},
+            {"question": "Which prints output?", "choices": ["print()", "echo()", "show()", "display()"], "answer": "print()"},
+            {"question": "Which converts to float?", "choices": ["float()", "int()", "str()", "bool()"], "answer": "float()"},
+            {"question": "f-strings start with:", "choices": ["f", "g", "s", "p"], "answer": "f"},
+            {"question": "Which creates input prompt?", "choices": ["input('Name: ')", "prompt('Name')", "ask('Name')", "read('Name')"], "answer": "input('Name: ')"},
+            {"question": "Why convert input to int?", "choices": ["For math", "For strings", "For loops", "For lists"], "answer": "For math"},
+            {"question": "Which shows a value?", "choices": ["print(value)", "input(value)", "value()", "show(value)"], "answer": "print(value)"},
+            {"question": "Which is valid formatting?", "choices": ["f'Total: {x}'", "'Total: {x}'", "format{Total}", "Total: x"], "answer": "f'Total: {x}'"},
+            {"question": "input() pauses for:", "choices": ["User typing", "File reading", "Loop end", "Network"], "answer": "User typing"},
+            {"question": "Which converts to int?", "choices": ["int()", "float()", "str()", "type()"], "answer": "int()"}
+          ]
+        },
+        {
+          "id": 12,
+          "title": "Python Basics 12: Files",
+          "xp": 180,
+          "reading": "Files let you save and load data. Use open('file.txt', 'r') for reading and open('file.txt', 'w') for writing. Always close files or use with open(...) as f.\n\nYou can read lines with f.read() or f.readlines() and write with f.write().",
+          "video_url": "",
+          "quiz": [
+            {"question": "Which opens a file for reading?", "choices": ["open('a.txt','r')", "open('a.txt','w')", "open('a.txt','x')", "open('a.txt','a')"], "answer": "open('a.txt','r')"},
+            {"question": "Which writes to a file?", "choices": ["f.write()", "f.read()", "f.open()", "f.load()"], "answer": "f.write()"},
+            {"question": "Which is safest for files?", "choices": ["with open(...) as f", "open() only", "readfile()", "file()"], "answer": "with open(...) as f"},
+            {"question": "'w' mode means:", "choices": ["Write", "Read", "Append", "Execute"], "answer": "Write"},
+            {"question": "Which reads all text?", "choices": ["f.read()", "f.write()", "f.lines()", "f.open()"], "answer": "f.read()"},
+            {"question": "Which appends to file?", "choices": ["'a'", "'w'", "'r'", "'x'"], "answer": "'a'"},
+            {"question": "Which closes a file?", "choices": ["f.close()", "f.end()", "f.stop()", "f.done()"], "answer": "f.close()"},
+            {"question": "files store:", "choices": ["Data", "Only code", "Only images", "Only numbers"], "answer": "Data"},
+            {"question": "Which reads lines into a list?", "choices": ["f.readlines()", "f.read()", "f.line()", "f.list()"], "answer": "f.readlines()"},
+            {"question": "Which mode creates file if missing?", "choices": ["'w'", "'r'", "'x'", "'t'"], "answer": "'w'"}
+          ]
+        },
+        {
+          "id": 13,
+          "title": "Python Basics 13: Modules",
+          "xp": 160,
+          "reading": "Modules let you reuse code. Import built-in modules like math or random.\n\nUse import math or from math import sqrt. Modules help organize large projects.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Which imports math?", "choices": ["import math", "include math", "use math", "add math"], "answer": "import math"},
+            {"question": "Which imports sqrt only?", "choices": ["from math import sqrt", "import sqrt", "use math sqrt", "math.sqrt"], "answer": "from math import sqrt"},
+            {"question": "Modules help:", "choices": ["Reuse code", "Delete files", "Slow programs", "Only loops"], "answer": "Reuse code"},
+            {"question": "random is used for:", "choices": ["Random numbers", "Printing", "Input", "Files"], "answer": "Random numbers"},
+            {"question": "Which calls math.pi?", "choices": ["math.pi", "pi()", "math('pi')", "pi"], "answer": "math.pi"},
+            {"question": "imported modules are:", "choices": ["Reusable code", "Variables only", "Loops only", "Strings"], "answer": "Reusable code"},
+            {"question": "Which is valid?", "choices": ["import random", "include random", "add random", "use random"], "answer": "import random"},
+            {"question": "Modules are stored in:", "choices": ["Files", "Lists", "Tuples", "Dictionaries"], "answer": "Files"},
+            {"question": "Which uses a module function?", "choices": ["math.sqrt(4)", "sqrt.math(4)", "math(4)", "sqrt(4)"], "answer": "math.sqrt(4)"},
+            {"question": "Which is NOT a module?", "choices": ["math", "random", "lists", "time"], "answer": "lists"}
+          ]
+        },
+        {
+          "id": 14,
+          "title": "Python Basics 14: Error Handling",
+          "xp": 170,
+          "reading": "Errors happen. Use try/except to handle them so your program doesn't crash. You can catch specific errors like ValueError.\n\nExample:\n\ntry:\n    age = int(input('Age: '))\nexcept ValueError:\n    print('Please enter a number')",
+          "video_url": "",
+          "quiz": [
+            {"question": "Which handles errors?", "choices": ["try/except", "if/else", "for/while", "def"], "answer": "try/except"},
+            {"question": "A ValueError happens when:", "choices": ["Wrong data type", "File missing", "No internet", "Loop ends"], "answer": "Wrong data type"},
+            {"question": "Which keyword catches errors?", "choices": ["except", "catch", "error", "handle"], "answer": "except"},
+            {"question": "try block contains:", "choices": ["Code to test", "Only errors", "Only output", "Only imports"], "answer": "Code to test"},
+            {"question": "except block runs when:", "choices": ["Error occurs", "No error", "Loop starts", "Program ends"], "answer": "Error occurs"},
+            {"question": "Which is valid?", "choices": ["try: ... except: ...", "try ... catch", "error ... handle", "if ... except"], "answer": "try: ... except: ..."},
+            {"question": "Which is a specific error?", "choices": ["ValueError", "TryError", "CatchError", "InputError"], "answer": "ValueError"},
+            {"question": "Error handling helps:", "choices": ["Prevent crashes", "Delete files", "Speed up CPU", "Hide code"], "answer": "Prevent crashes"},
+            {"question": "Which converts input safely?", "choices": ["try/except with int()", "input() only", "print()", "return"], "answer": "try/except with int()"},
+            {"question": "Which is NOT related to errors?", "choices": ["except", "try", "error", "loop"], "answer": "loop"}
+          ]
+        },
+        {
+          "id": 15,
+          "title": "Python Basics 15: Classes & Objects",
+          "xp": 200,
+          "reading": "Classes let you create your own data types. An object is an instance of a class. Define a class with class MyClass: and create objects like my = MyClass().\n\nUse __init__ to set up initial values. Classes help you model real-world things like Students or Games.",
+          "video_url": "",
+          "quiz": [
+            {"question": "A class is:", "choices": ["A blueprint", "A loop", "A file", "A module"], "answer": "A blueprint"},
+            {"question": "An object is:", "choices": ["An instance of a class", "A function", "A list", "A loop"], "answer": "An instance of a class"},
+            {"question": "__init__ is used to:", "choices": ["Initialize values", "Print", "Loop", "Import"], "answer": "Initialize values"},
+            {"question": "Which creates an object?", "choices": ["MyClass()", "class MyClass", "def MyClass", "object MyClass"], "answer": "MyClass()"},
+            {"question": "Classes help model:", "choices": ["Real things", "Only numbers", "Only strings", "Only files"], "answer": "Real things"},
+            {"question": "Which is a class definition?", "choices": ["class Student:", "def Student:", "Student = class", "new Student"], "answer": "class Student:"},
+            {"question": "Objects have:", "choices": ["Attributes and methods", "Only strings", "Only loops", "Only files"], "answer": "Attributes and methods"},
+            {"question": "Which is method call?", "choices": ["obj.method()", "method.obj()", "obj->method()", "obj(method)"], "answer": "obj.method()"},
+            {"question": "Classes are defined using:", "choices": ["class", "def", "loop", "import"], "answer": "class"},
+            {"question": "Objects are created by:", "choices": ["Calling class", "Importing class", "Reading file", "Using list"], "answer": "Calling class"}
+          ]
+        },
+        {
+          "id": 16,
+          "title": "Python Basics 16: List Comprehensions",
+          "xp": 190,
+          "reading": "List comprehensions create new lists in one line. Example: squares = [x*x for x in range(5)].\n\nYou can also add conditions: evens = [x for x in range(10) if x % 2 == 0].\n\nComprehensions make code shorter and more readable.",
+          "video_url": "",
+          "quiz": [
+            {"question": "A list comprehension looks like:", "choices": ["[x for x in list]", "(x for x in list)", "{x for x in list}", "list(x for x)"], "answer": "[x for x in list]"},
+            {"question": "Which makes squares?", "choices": ["[x*x for x in range(3)]", "[x** for x]", "square(x)", "for x in range"], "answer": "[x*x for x in range(3)]"},
+            {"question": "Comprehensions make code:", "choices": ["Shorter", "Slower", "Harder", "Broken"], "answer": "Shorter"},
+            {"question": "Which adds a filter?", "choices": ["if x % 2 == 0", "when x", "filter(x)", "x even"], "answer": "if x % 2 == 0"},
+            {"question": "List comprehension output is:", "choices": ["A list", "A tuple", "A dict", "A set"], "answer": "A list"},
+            {"question": "Which is valid?", "choices": ["[x for x in range(5)]", "[for x in range(5)]", "x for x in range", "list[x]"], "answer": "[x for x in range(5)]"},
+            {"question": "Comprehensions can replace:", "choices": ["Simple loops", "Files", "Imports", "Errors"], "answer": "Simple loops"},
+            {"question": "Which filters evens?", "choices": ["[x for x in range(6) if x%2==0]", "[x if x%2==0]", "even(range(6))", "x%2"], "answer": "[x for x in range(6) if x%2==0]"},
+            {"question": "Comprehensions use:", "choices": ["Brackets", "Parentheses", "Braces", "Angles"], "answer": "Brackets"},
+            {"question": "Which is NOT a comprehension?", "choices": ["for x in list", "[x for x in list]", "[x*x for x in list]", "[x for x in list if x>0]"], "answer": "for x in list"}
+          ]
+        },
+        {
+          "id": 17,
+          "title": "Python Basics 17: Sets",
+          "xp": 160,
+          "reading": "Sets store unique items. Use braces: colors = {'red', 'blue'}. Sets remove duplicates automatically.\n\nYou can add items with add() and combine sets with union or intersection.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Sets store:", "choices": ["Unique items", "Duplicates", "Only numbers", "Only lists"], "answer": "Unique items"},
+            {"question": "Sets use:", "choices": ["{}", "[]", "()", "<>"], "answer": "{}"},
+            {"question": "Which adds to a set?", "choices": ["add()", "append()", "insert()", "push()"], "answer": "add()"},
+            {"question": "Which removes duplicates?", "choices": ["Set", "List", "Tuple", "Dict"], "answer": "Set"},
+            {"question": "Union means:", "choices": ["Combine", "Split", "Remove", "Sort"], "answer": "Combine"},
+            {"question": "Intersection means:", "choices": ["Common items", "Different items", "All items", "No items"], "answer": "Common items"},
+            {"question": "Sets are:", "choices": ["Unordered", "Ordered", "Sorted", "Indexed"], "answer": "Unordered"},
+            {"question": "Which creates a set?", "choices": ["{'a','b'}", "['a','b']", "('a','b')", "<a,b>"], "answer": "{'a','b'}"},
+            {"question": "Which method checks membership?", "choices": ["in", "has()", "contains()", "inside()"], "answer": "in"},
+            {"question": "Sets are useful for:", "choices": ["Uniqueness", "Ordering", "Indexes", "Files"], "answer": "Uniqueness"}
+          ]
+        },
+        {
+          "id": 18,
+          "title": "Python Basics 18: Booleans & Logic",
+          "xp": 150,
+          "reading": "Booleans are True or False. You use logical operators and, or, and not to combine conditions.\n\nBoolean logic helps you control program flow with conditions.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Boolean values are:", "choices": ["True/False", "Yes/No", "1/0", "On/Off"], "answer": "True/False"},
+            {"question": "Which means logical AND?", "choices": ["and", "or", "not", "xor"], "answer": "and"},
+            {"question": "Which flips a boolean?", "choices": ["not", "and", "or", "flip"], "answer": "not"},
+            {"question": "True and False is:", "choices": ["False", "True", "None", "Error"], "answer": "False"},
+            {"question": "True or False is:", "choices": ["True", "False", "None", "Error"], "answer": "True"},
+            {"question": "not True is:", "choices": ["False", "True", "None", "Error"], "answer": "False"},
+            {"question": "Which is a boolean expression?", "choices": ["5 > 3", "'a'", "3", "[1,2]"], "answer": "5 > 3"},
+            {"question": "Logical operators combine:", "choices": ["Conditions", "Files", "Strings", "Lists"], "answer": "Conditions"},
+            {"question": "False or False is:", "choices": ["False", "True", "None", "Error"], "answer": "False"},
+            {"question": "True and True is:", "choices": ["True", "False", "None", "Error"], "answer": "True"}
+          ]
+        },
+        {
+          "id": 19,
+          "title": "Python Basics 19: Slicing",
+          "xp": 150,
+          "reading": "Slicing lets you take parts of strings or lists. Use [start:stop] where stop is not included.\n\nExample: word[0:3] gets the first 3 characters. Use word[:3] or word[3:] as shortcuts.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Slice first 3 items:", "choices": ["items[:3]", "items[3:]", "items[0,3]", "items(0:3)"], "answer": "items[:3]"},
+            {"question": "Stop index is:", "choices": ["Excluded", "Included", "Random", "Ignored"], "answer": "Excluded"},
+            {"question": "Which slices last 2?", "choices": ["items[-2:]", "items[:2]", "items[2]", "items[-2]"], "answer": "items[-2:]"},
+            {"question": "Slicing works on:", "choices": ["Strings and lists", "Only numbers", "Only files", "Only dicts"], "answer": "Strings and lists"},
+            {"question": "Which is a valid slice?", "choices": ["text[1:4]", "text(1:4)", "text{1:4}", "slice text"], "answer": "text[1:4]"},
+            {"question": "[:3] means:", "choices": ["Start to 3", "3 to end", "Only index 3", "All"], "answer": "Start to 3"},
+            {"question": "[3:] means:", "choices": ["3 to end", "Start to 3", "Only index 3", "None"], "answer": "3 to end"},
+            {"question": "Which uses step?", "choices": ["text[::2]", "text[2]", "text[:2]", "text[2:]"], "answer": "text[::2]"},
+            {"question": "Slicing does not change original:", "choices": ["True", "False", "Sometimes", "Only lists"], "answer": "True"},
+            {"question": "Slices are:", "choices": ["New copies", "Same object", "Deleted", "Errors"], "answer": "New copies"}
+          ]
+        },
+        {
+          "id": 20,
+          "title": "Python Basics 20: Recap + Mini Project",
+          "xp": 220,
+          "reading": "You now know variables, conditionals, loops, functions, and collections. A mini project idea: create a quiz game that stores questions in a list, uses a loop to ask them, and counts the score.\n\nTry extending it with a dictionary to track categories, or write results to a file. Projects help you connect the dots between skills.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Which stores multiple values?", "choices": ["List", "Int", "Bool", "Float"], "answer": "List"},
+            {"question": "Which repeats code?", "choices": ["Loop", "If", "Return", "Print"], "answer": "Loop"},
+            {"question": "Which defines reusable code?", "choices": ["Function", "Loop", "List", "String"], "answer": "Function"},
+            {"question": "Which stores key-value pairs?", "choices": ["Dictionary", "List", "Tuple", "Set"], "answer": "Dictionary"},
+            {"question": "Which handles errors?", "choices": ["try/except", "print", "input", "def"], "answer": "try/except"},
+            {"question": "A mini project helps you:", "choices": ["Connect skills", "Delete code", "Avoid practice", "Skip learning"], "answer": "Connect skills"},
+            {"question": "Which uses conditions?", "choices": ["if", "for", "def", "import"], "answer": "if"},
+            {"question": "Which stores unique items?", "choices": ["Set", "List", "Dict", "Tuple"], "answer": "Set"},
+            {"question": "Which formats strings nicely?", "choices": ["f-strings", "lists", "loops", "files"], "answer": "f-strings"},
+            {"question": "Which reads a file?", "choices": ["open('file','r')", "open('file','w')", "file.reads()", "read(file)"], "answer": "open('file','r')"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "javascript",
+      "name": "JavaScript",
+      "description": "Build interactive web experiences.",
+      "enabled": true,
+      "lessons": [
+        {
+          "id": 1,
+          "title": "JavaScript Basics 1: Intro to JS",
+          "xp": 100,
+          "reading": "JavaScript powers interactivity on the web. It runs in the browser and can update the page without reloading. Use console.log() to output text and let/const to create variables.",
+          "video_url": "",
+          "quiz": [
+            {"question": "JavaScript runs in:", "choices": ["Browser", "Only servers", "Only phones", "Only databases"], "answer": "Browser"},
+            {"question": "Which prints output?", "choices": ["console.log()", "print()", "echo()", "display()"], "answer": "console.log()"},
+            {"question": "Which declares a variable?", "choices": ["let", "def", "varr", "constt"], "answer": "let"},
+            {"question": "Which keyword makes a constant?", "choices": ["const", "let", "var", "static"], "answer": "const"},
+            {"question": "JS is used for:", "choices": ["Interactivity", "Styling only", "Databases only", "Hardware"], "answer": "Interactivity"},
+            {"question": "Which is a comment?", "choices": ["// comment", "# comment", "<!-- -->", "**comment**"], "answer": "// comment"},
+            {"question": "Which is a string?", "choices": ["'hello'", "hello", "5", "true"], "answer": "'hello'"},
+            {"question": "Which is a number?", "choices": ["5", "'5'", "true", "null"], "answer": "5"},
+            {"question": "Which runs code?", "choices": ["<script>", "<style>", "<div>", "<img>"], "answer": "<script>"},
+            {"question": "Which is boolean?", "choices": ["true", "'true'", "1", "yes"], "answer": "true"}
+          ]
+        },
+        {
+          "id": 2,
+          "title": "JavaScript Basics 2: Functions",
+          "xp": 120,
+          "reading": "Functions group reusable code. Define with function name() {} or const name = () => {}. Functions can take parameters and return values.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Which defines a function?", "choices": ["function greet() {}", "def greet():", "func greet()", "greet => {}"], "answer": "function greet() {}"},
+            {"question": "Arrow function example:", "choices": ["const add = () => {}", "def add():", "function => add", "add = function"], "answer": "const add = () => {}"},
+            {"question": "Parameters are:", "choices": ["Inputs", "Outputs", "Loops", "Files"], "answer": "Inputs"},
+            {"question": "Return does:", "choices": ["Sends value back", "Prints", "Loops", "Imports"], "answer": "Sends value back"},
+            {"question": "Which calls a function?", "choices": ["greet()", "call greet", "greet[]", "greet"], "answer": "greet()"},
+            {"question": "Functions help:", "choices": ["Reuse code", "Delete files", "Hide buttons", "Slow apps"], "answer": "Reuse code"},
+            {"question": "Which is a function name?", "choices": ["calculateTotal", "1stFunc", "my-func", "func name"], "answer": "calculateTotal"},
+            {"question": "Parameters go inside:", "choices": ["()", "[]", "{}", "<>"], "answer": "()"},
+            {"question": "A function can:", "choices": ["Return a value", "Only print", "Only loop", "Only import"], "answer": "Return a value"},
+            {"question": "Which creates a function expression?", "choices": ["const f = function() {}", "function = f", "def f", "f: function"], "answer": "const f = function() {}"}
+          ]
+        },
+        {
+          "id": 3,
+          "title": "JavaScript Basics 3: Conditions",
+          "xp": 130,
+          "reading": "Use if, else if, and else to run code based on conditions. Comparisons use ===, !==, >, <. Combine with && and ||.",
+          "video_url": "",
+          "quiz": [
+            {"question": "Which starts a condition?", "choices": ["if", "for", "def", "when"], "answer": "if"},
+            {"question": "Strict equality is:", "choices": ["===", "==", "=", "!=="], "answer": "==="},
+            {"question": "Not equal is:", "choices": ["!==", "!", "=", "=="], "answer": "!=="},
+            {"question": "AND operator:", "choices": ["&&", "||", "!", "??"], "answer": "&&"},
+            {"question": "OR operator:", "choices": ["||", "&&", "!", "??"], "answer": "||"},
+            {"question": "Which compares greater than?", "choices": [">", "<", "=", "=="], "answer": ">"},
+            {"question": "Which is a boolean?", "choices": ["true", "'true'", "1", "yes"], "answer": "true"},
+            {"question": "else runs when:", "choices": ["No condition true", "Always", "First condition", "Loop"], "answer": "No condition true"},
+            {"question": "Which is valid?", "choices": ["if (x > 3) {}", "if x > 3:", "if x > 3 then", "if x > 3"], "answer": "if (x > 3) {}"},
+            {"question": "Conditions control:", "choices": ["Flow", "CSS", "HTML", "Files"], "answer": "Flow"}
+          ]
+        },
+        {
+          "id": 4,
+          "title": "JavaScript Basics 4: Arrays",
+          "xp": 140,
+          "reading": "Arrays store multiple values: const items = ['a', 'b']. Use index 0 for the first item. Add with push(), remove with pop().",
+          "video_url": "",
+          "quiz": [
+            {"question": "Arrays use:", "choices": ["[]", "{}", "()", "<>"], "answer": "[]"},
+            {"question": "First index is:", "choices": ["0", "1", "-1", "2"], "answer": "0"},
+            {"question": "Which adds to end?", "choices": ["push()", "append()", "add()", "insert()"], "answer": "push()"},
+            {"question": "Which removes last item?", "choices": ["pop()", "shift()", "remove()", "delete()"], "answer": "pop()"},
+            {"question": "Length of array:", "choices": ["arr.length", "len(arr)", "arr.size", "arr.count"], "answer": "arr.length"},
+            {"question": "Arrays store:", "choices": ["Multiple values", "Single value", "Only numbers", "Only strings"], "answer": "Multiple values"},
+            {"question": "Which is an array?", "choices": ["['a','b']", "('a','b')", "{'a','b'}", "<a,b>"], "answer": "['a','b']"},
+            {"question": "Which gets first item?", "choices": ["arr[0]", "arr[1]", "arr.first", "arr.get(0)"], "answer": "arr[0]"},
+            {"question": "Which adds to start?", "choices": ["unshift()", "push()", "pop()", "shift()"], "answer": "unshift()"},
+            {"question": "Which removes from start?", "choices": ["shift()", "pop()", "push()", "unshift()"], "answer": "shift()"}
+          ]
+        },
+        {
+          "id": 5,
+          "title": "JavaScript Basics 5: DOM",
+          "xp": 160,
+          "reading": "The DOM lets JavaScript change the page. Use document.querySelector() to select elements and .addEventListener() to react to clicks.\n\nExample: document.querySelector('button').addEventListener('click', () => { alert('Hi'); });",
+          "video_url": "",
+          "quiz": [
+            {"question": "DOM stands for:", "choices": ["Document Object Model", "Data Object Map", "Display Order Matrix", "Document Output Mode"], "answer": "Document Object Model"},
+            {"question": "Selects an element:", "choices": ["document.querySelector()", "document.get()", "document.pick()", "document.finder()"], "answer": "document.querySelector()"},
+            {"question": "Event listener method:", "choices": ["addEventListener", "listen()", "onEvent()", "watch()"], "answer": "addEventListener"},
+            {"question": "Which handles clicks?", "choices": ["'click'", "'tap'", "'press'", "'hit'"], "answer": "'click'"},
+            {"question": "Which changes text?", "choices": ["element.textContent", "element.text()", "element.texting", "element.value"], "answer": "element.textContent"},
+            {"question": "DOM lets JS:", "choices": ["Change the page", "Only style", "Only load", "Only save"], "answer": "Change the page"},
+            {"question": "Which is valid?", "choices": ["document.querySelector('.btn')", "document.select('.btn')", "query('.btn')", "select('.btn')"], "answer": "document.querySelector('.btn')"},
+            {"question": "Event means:", "choices": ["User action", "Variable", "Function", "Loop"], "answer": "User action"},
+            {"question": "Which targets id?", "choices": ["#id", ".id", "id", "@id"], "answer": "#id"},
+            {"question": "DOM is:", "choices": ["Page structure", "Database", "Server", "File"], "answer": "Page structure"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "css",
+      "name": "CSS",
+      "description": "Design beautiful layouts and animations.",
+      "enabled": false,
+      "lessons": []
+    },
+    {
+      "id": "cpp",
+      "name": "C++",
+      "description": "Learn fast, powerful systems programming.",
+      "enabled": false,
+      "lessons": []
+    }
+  ]
+}

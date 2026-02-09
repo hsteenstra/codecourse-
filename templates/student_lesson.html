@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="lesson-shell">
+  <div class="lesson-header">
+    <div>
+      <h1>{{ lesson.title }}</h1>
+      <p class="subtitle">Complete reading, watch the video, then ace the quiz.</p>
+    </div>
+    <div class="lesson-xp">XP {{ lesson.xp }}</div>
+  </div>
+
+  {% if quiz_result and quiz_result.all_correct %}
+    <div class="card lesson-complete">
+      <h2 class="success">Correct! Lesson complete.</h2>
+      <p>Great work — you unlocked the next bubble.</p>
+      {% if quiz_result.assignment_completed %}
+        <div class="pill completed">Assignment turned in</div>
+      {% endif %}
+      <a href="/student/language/{{ lang.id }}"><button class="primary">Continue</button></a>
+      <canvas id="confetti"></canvas>
+    </div>
+  {% else %}
+    <div class="lesson-steps">
+      <div class="step" data-step="0">
+        <div class="card">
+          <h2>Let’s start!</h2>
+          <p>Move through the steps below to complete this lesson.</p>
+          <button class="primary" data-next>Start Lesson</button>
+        </div>
+      </div>
+
+      <div class="step" data-step="1">
+        <div class="lesson-card">
+          <div class="step-header">
+            <h2>Reading</h2>
+            <span class="step-pill">Step 1 of 3</span>
+          </div>
+          <p class="reading-text" id="reading-text">{{ lesson.reading }}</p>
+          <button class="ghost" id="highlight-btn">Highlight selection</button>
+
+          <form method="post" action="/student/lesson/{{ lang.id }}/{{ lesson.id }}/notes">
+            <label class="label">Notes</label>
+            <textarea name="notes" rows="6" placeholder="Write your notes here...">{{ notes }}</textarea>
+            <button class="secondary">Save Notes</button>
+          </form>
+
+          <button class="primary" data-next>Next: Video</button>
+        </div>
+      </div>
+
+      <div class="step" data-step="2">
+        <div class="lesson-card">
+          <div class="step-header">
+            <h2>Video</h2>
+            <span class="step-pill">Step 2 of 3</span>
+          </div>
+          {% if lesson.video_url %}
+            <div class="video-frame">
+              <iframe src="{{ lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
+            </div>
+          {% else %}
+            <div class="video-placeholder">
+              Add a video URL for this lesson anytime. Example: YouTube embed link.
+            </div>
+          {% endif %}
+          <button class="primary" data-next>Next: Quiz</button>
+        </div>
+      </div>
+
+      <div class="step" data-step="3">
+        <div class="lesson-card">
+          <div class="step-header">
+            <h2>Quiz</h2>
+            <span class="step-pill">Step 3 of 3</span>
+          </div>
+          <form method="post" action="/student/lesson/{{ lang.id }}/{{ lesson.id }}/quiz">
+            {% for q in lesson.quiz %}
+              {% set q_index = loop.index0 %}
+              <div class="quiz-block">
+                <p class="quiz-question">{{ loop.index }}. {{ q.question }}</p>
+                {% for choice in q.choices %}
+                  <label class="choice">
+                    <input type="radio" name="q{{ q_index }}" value="{{ choice }}" required>
+                    {{ choice }}
+                  </label>
+                {% endfor %}
+              </div>
+            {% endfor %}
+            <button class="primary">Submit Quiz</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if quiz_result and not quiz_result.all_correct %}
+    <div class="card quiz-feedback">
+      <h3>Quiz Results: {{ quiz_result.score }}%</h3>
+      <p>You need {{ quiz_result.passing_score }}% to pass. Review and try again.</p>
+      <ul class="quiz-results">
+        {% for r in quiz_result.results %}
+          <li class="{{ 'correct' if r.correct else 'incorrect' }}">
+            <strong>{{ r.question }}</strong><br>
+            Your answer: {{ r.your_answer or 'No answer' }}<br>
+            Correct: {{ r.correct_answer }}
+          </li>
+        {% endfor %}
+      </ul>
+      <a href="/student/lesson/{{ lang.id }}/{{ lesson.id }}"><button class="secondary">Retry Quiz</button></a>
+    </div>
+  {% endif %}
+</div>
+
+{% if quiz_result and quiz_result.all_correct %}
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } });
+</script>
+{% endif %}
+
+<script>
+const steps = Array.from(document.querySelectorAll('.step'));
+const nextButtons = document.querySelectorAll('[data-next]');
+let current = 0;
+
+function showStep(idx) {
+  steps.forEach(step => step.style.display = 'none');
+  const target = steps.find(s => Number(s.dataset.step) === idx);
+  if (target) target.style.display = 'block';
+}
+
+nextButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    current += 1;
+    showStep(current);
+  });
+});
+
+showStep(0);
+
+const highlightBtn = document.getElementById('highlight-btn');
+const readingText = document.getElementById('reading-text');
+if (highlightBtn && readingText) {
+  highlightBtn.addEventListener('click', () => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+    const range = selection.getRangeAt(0);
+    if (!readingText.contains(range.commonAncestorContainer)) return;
+    const mark = document.createElement('mark');
+    try {
+      range.surroundContents(mark);
+    } catch (err) {
+      return;
+    }
+    selection.removeAllRanges();
+  });
+}
+</script>
+
+{% endblock %}

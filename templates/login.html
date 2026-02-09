@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="auth-layout">
+  <div class="card glow auth-hero">
+    <h1>CodeCourse</h1>
+    <p class="subtitle">Step-by-step coding lessons + classroom tools for teachers.</p>
+
+    <ul class="feature-list">
+      <li>Learn Python step-by-step with reading, video, and quizzes</li>
+      <li>Earn XP, keep streaks, and unlock badges</li>
+      <li>Teachers can create classrooms and assign lessons</li>
+    </ul>
+  </div>
+
+  <div class="card auth-card">
+    <h2>Create your account</h2>
+    <form method="post">
+      <input type="hidden" name="form_type" value="signup">
+      <input name="name" placeholder="Full name" required>
+      <input name="username" placeholder="Username" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>
+
+      <div class="inline-grid">
+        <select name="role" required>
+          <option disabled selected>Select role</option>
+          <option>Student</option>
+          <option>Teacher</option>
+        </select>
+        <select name="avatar" required>
+          <option disabled selected>Choose avatar</option>
+          <option value="avatar-1.svg">Nebula</option>
+          <option value="avatar-2.svg">Nova</option>
+          <option value="avatar-3.svg">Orbit</option>
+          <option value="avatar-4.svg">Pulse</option>
+          <option value="avatar-5.svg">Comet</option>
+          <option value="avatar-6.svg">Zenith</option>
+        </select>
+      </div>
+
+      <button class="primary">Enter Platform</button>
+    </form>
+
+    <div class="divider"></div>
+
+    <h3>Already have an account?</h3>
+    <form method="post">
+      <input type="hidden" name="form_type" value="signin">
+      <input name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button class="secondary">Sign in</button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
