@@ -286,8 +286,8 @@ def now_ts():
     return datetime.utcnow().isoformat()
 
 
-def get_avatar_options() -> list[str]:
-    avatar_dir = BASE_DIR / "static" / "avatars"
+def get_avatar_options(folder: str) -> list[str]:
+    avatar_dir = BASE_DIR / "static" / folder
     if not avatar_dir.exists():
         return []
     allowed = {".png", ".jpg", ".jpeg", ".svg", ".webp"}
@@ -688,8 +688,13 @@ def login():
                 return redirect(url_for("join_class_by_code", code=code))
             return redirect(url_for("student_home" if user["role"] == "Student" else "teacher_home"))
 
-    avatars = get_avatar_options()
+    avatar_folder = "cfm_pics"
+    avatars = get_avatar_options(avatar_folder)
     if not avatars:
+        avatar_folder = "avatars"
+        avatars = get_avatar_options(avatar_folder)
+    if not avatars:
+        avatar_folder = "avatars"
         avatars = [
             "avatar-1.svg",
             "avatar-2.svg",
@@ -698,7 +703,7 @@ def login():
             "avatar-5.svg",
             "avatar-6.svg",
         ]
-    return render_template("login.html", avatars=avatars)
+    return render_template("login.html", avatars=avatars, avatar_folder=avatar_folder)
 
 
 @app.route("/admin/login", methods=["GET", "POST"])
