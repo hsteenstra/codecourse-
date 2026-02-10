@@ -216,6 +216,21 @@ def init_db():
         """
     )
 
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS assignment_comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            assignment_id INTEGER NOT NULL,
+            student_id INTEGER NOT NULL,
+            author_role TEXT NOT NULL,
+            body TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (assignment_id) REFERENCES assignments (id),
+            FOREIGN KEY (student_id) REFERENCES users (id)
+        );
+        """
+    )
+
     conn.commit()
     conn.close()
 
@@ -245,6 +260,19 @@ def migrate_db():
             body TEXT NOT NULL,
             audience TEXT NOT NULL,
             student_id INTEGER,
+            created_at TEXT NOT NULL
+        );
+        """
+    )
+
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS assignment_comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            assignment_id INTEGER NOT NULL,
+            student_id INTEGER NOT NULL,
+            author_role TEXT NOT NULL,
+            body TEXT NOT NULL,
             created_at TEXT NOT NULL
         );
         """
@@ -491,6 +519,7 @@ def get_stream_posts_for_student(classroom_ids: list[int], student_id: int):
         JOIN classrooms c ON c.id = p.classroom_id
         WHERE p.classroom_id IN ({placeholders})
           AND (p.audience = 'class' OR (p.audience = 'student' AND p.student_id = ?))
+          AND NOT (p.kind = 'grade' AND p.audience = 'class')
         ORDER BY p.created_at DESC
         LIMIT 30
     """
@@ -1192,6 +1221,24 @@ def student_classroom():
         (user_id,),
     ).fetchall()
 
+    assignment_ids = [a["id"] for a in assignments]
+    comments_by_assignment = {}
+    if assignment_ids:
+        placeholders = ",".join("?" for _ in assignment_ids)
+        comment_rows = conn.execute(
+            f"""
+            SELECT assignment_id, author_role, body, created_at
+            FROM assignment_comments
+            WHERE student_id = ?
+              AND assignment_id IN ({placeholders})
+            ORDER BY created_at ASC
+            """,
+            (user_id, *assignment_ids),
+        ).fetchall()
+
+        for row in comment_rows:
+            comments_by_assignment.setdefault(row["assignment_id"], []).append(dict(row))
+
     # Backfill assignment completion based on progress
     updated_assignments = []
     for a in assignments:
@@ -1231,6 +1278,7 @@ def student_classroom():
         classrooms=classrooms,
         assignments=updated_assignments,
         stream_items=stream_items,
+        comments_by_assignment=comments_by_assignment,
     )
 
 
@@ -1314,18 +1362,91 @@ def student_assignment_comment(assignment_id):
         return redirect(url_for("student_classroom"))
 
     conn = get_db()
+    assignment = conn.execute(
+        """
+        SELECT a.classroom_id, c.teacher_id
+        FROM assignments a
+        JOIN classrooms c ON c.id = a.classroom_id
+        WHERE a.id = ?
+        """,
+        (assignment_id,),
+    ).fetchone()
+
     conn.execute(
         """
-        UPDATE assignment_submissions
-        SET student_comment = ?
-        WHERE assignment_id = ? AND student_id = ?
+        INSERT INTO assignment_comments (assignment_id, student_id, author_role, body, created_at)
+        VALUES (?, ?, 'student', ?, ?)
         """,
-        (comment, assignment_id, session["user_id"]),
+        (assignment_id, session["user_id"], comment, now_ts()),
     )
     conn.commit()
     conn.close()
+    if assignment:
+        create_notification(
+            assignment["teacher_id"],
+            "New student comment",
+            "A student left a comment on an assignment.",
+            classroom_id=assignment["classroom_id"],
+        )
     flash("Comment sent to your teacher.")
     return redirect(url_for("student_classroom"))
+
+
+@app.route("/teacher/assignment/<int:assignment_id>/comment", methods=["POST"])
+def teacher_assignment_comment(assignment_id):
+    guard = require_login()
+    if guard:
+        return guard
+    if require_role("Teacher"):
+        return redirect(url_for("student_home"))
+
+    message = request.form.get("message", "").strip()
+    student_id = request.form.get("student_id")
+    if not message or not student_id:
+        flash("Please write a response.")
+        return redirect(request.referrer or url_for("teacher_home"))
+
+    try:
+        student_id_val = int(student_id)
+    except ValueError:
+        flash("Invalid student.")
+        return redirect(request.referrer or url_for("teacher_home"))
+
+    conn = get_db()
+    assignment = conn.execute(
+        """
+        SELECT a.classroom_id, c.teacher_id
+        FROM assignments a
+        JOIN classrooms c ON c.id = a.classroom_id
+        WHERE a.id = ?
+        """,
+        (assignment_id,),
+    ).fetchone()
+
+    if not assignment or assignment["teacher_id"] != session["user_id"]:
+        conn.close()
+        flash("Assignment not found.")
+        return redirect(request.referrer or url_for("teacher_home"))
+
+    conn.execute(
+        """
+        INSERT INTO assignment_comments (assignment_id, student_id, author_role, body, created_at)
+        VALUES (?, ?, 'teacher', ?, ?)
+        """,
+        (assignment_id, student_id_val, message, now_ts()),
+    )
+    conn.commit()
+    conn.close()
+
+    create_notification(
+        student_id_val,
+        "Teacher replied",
+        "Your teacher replied to your assignment comment.",
+        classroom_id=assignment["classroom_id"],
+    )
+
+    flash("Reply sent.")
+    return redirect(request.referrer or url_for("teacher_home"))
 
 
 # ---------------- Teacher ----------------
@@ -1429,6 +1550,36 @@ def teacher_classroom(classroom_id):
         (classroom_id,),
     ).fetchall()
 
+    assignment_ids = [a["id"] for a in assignments]
+    comments_by_assignment = {}
+    if assignment_ids:
+        placeholders = ",".join("?" for _ in assignment_ids)
+        comment_rows = conn.execute(
+            f"""
+            SELECT ac.assignment_id, ac.student_id, ac.author_role, ac.body, ac.created_at,
+                   u.name, u.username
+            FROM assignment_comments ac
+            JOIN users u ON u.id = ac.student_id
+            WHERE ac.assignment_id IN ({placeholders})
+            ORDER BY ac.created_at ASC
+            """,
+            (*assignment_ids,),
+        ).fetchall()
+
+        for row in comment_rows:
+            assignment_bucket = comments_by_assignment.setdefault(row["assignment_id"], {})
+            student_bucket = assignment_bucket.setdefault(
+                row["student_id"],
+                {"student_id": row["student_id"], "name": row["name"], "username": row["username"], "thread": []},
+            )
+            student_bucket["thread"].append(
+                {
+                    "author_role": row["author_role"],
+                    "body": row["body"],
+                    "created_at": row["created_at"],
+                }
+            )
+
     submissions = conn.execute(
         """
         SELECT s.id as submission_id, s.status, s.score, s.grade_out_of_10,
@@ -1451,21 +1602,6 @@ def teacher_classroom(classroom_id):
         (classroom_id,),
     ).fetchall()
 
-    comments = conn.execute(
-        """
-        SELECT s.student_comment, u.name, u.username, a.lesson_lang, a.lesson_id
-        FROM assignment_submissions s
-        JOIN users u ON u.id = s.student_id
-        JOIN assignments a ON a.id = s.assignment_id
-        WHERE a.classroom_id = ?
-          AND s.student_comment IS NOT NULL
-          AND s.student_comment != ''
-        ORDER BY s.id DESC
-        LIMIT 10
-        """,
-        (classroom_id,),
-    ).fetchall()
-
     conn.close()
 
     stream_items = get_stream_posts_for_teacher(classroom_id)
@@ -1478,7 +1614,7 @@ def teacher_classroom(classroom_id):
         assignments=assignments,
         submissions=submissions,
         invites=invites,
-        comments=comments,
+        comments_by_assignment=comments_by_assignment,
         stream_items=stream_items,
         languages=all_languages(),
     )

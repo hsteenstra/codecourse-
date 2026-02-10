@@ -78,29 +78,49 @@
         {% if assignments %}
           <div class="stack" style="margin-top: 12px;">
             {% for a in assignments %}
-              <div class="assignment-row" data-classroom-id="{{ a.classroom_id }}">
-                <div>
-                  <div class="strong">{{ a.lesson_lang|upper }} Lesson {{ a.lesson_id }}</div>
-                  <div class="muted">{{ a.classroom_name }}</div>
-                  {% if a.comment %}<div class="muted" style="margin-top: 4px;">Teacher note: {{ a.comment }}</div>{% endif %}
-                  {% if a.due_date %}<div class="muted" style="margin-top: 4px;">Due: {{ a.due_date }}</div>{% endif %}
+              <div class="assignment-row" data-classroom-id="{{ a.classroom_id }}" style="flex-direction: column; align-items: stretch;">
+                <div class="row between wrap">
+                  <div>
+                    <div class="strong">{{ a.lesson_lang|upper }} Lesson {{ a.lesson_id }}</div>
+                    <div class="muted">{{ a.classroom_name }}</div>
+                    {% if a.comment %}<div class="muted" style="margin-top: 4px;">Teacher note: {{ a.comment }}</div>{% endif %}
+                    {% if a.due_date %}<div class="muted" style="margin-top: 4px;">Due: {{ a.due_date }}</div>{% endif %}
+                  </div>
 
-                  <form method="post" action="/student/assignment/{{ a.id }}/comment" class="form" style="margin-top: 10px; gap: 10px;">
-                    <input name="comment" placeholder="Comment to your teacher">
-                    <button class="btn btn-ghost" type="submit">Send</button>
-                  </form>
+                  <div class="assignment-actions">
+                    {% if a.status == 'completed' %}
+                      <span class="pill-tag good">Completed</span>
+                    {% else %}
+                      <span class="pill-tag todo">To do</span>
+                    {% endif %}
+                    {% if a.grade_out_of_10 is not none %}
+                      <span class="pill-tag grade">{{ a.grade_out_of_10 }}/10</span>
+                    {% endif %}
+                    <a class="btn btn-secondary" href="/student/lesson/{{ a.lesson_lang }}/{{ a.lesson_id }}">Open</a>
+                  </div>
                 </div>
 
-                <div class="assignment-actions">
-                  {% if a.status == 'completed' %}
-                    <span class="pill-tag good">Completed</span>
+                <div class="comment-shell" style="margin-top: 14px;">
+                  <div class="panel-title">Comments</div>
+                  {% set thread = comments_by_assignment.get(a.id, []) %}
+                  {% if thread %}
+                    <div class="comment-list" style="margin-top: 10px;">
+                      {% for msg in thread %}
+                        <div class="comment-item {{ 'teacher' if msg.author_role == 'teacher' else 'student' }}">
+                          <div class="comment-role">{{ 'Teacher' if msg.author_role == 'teacher' else 'You' }}</div>
+                          <div class="comment-body">{{ msg.body }}</div>
+                          <div class="comment-meta">{{ msg.created_at|fmt_dt }}</div>
+                        </div>
+                      {% endfor %}
+                    </div>
                   {% else %}
-                    <span class="pill-tag todo">To do</span>
+                    <p class="muted" style="margin-top: 8px;">No comments yet. Ask a question if you need help.</p>
                   {% endif %}
-                  {% if a.grade_out_of_10 is not none %}
-                    <span class="pill-tag grade">{{ a.grade_out_of_10 }}/10</span>
-                  {% endif %}
-                  <a class="btn btn-secondary" href="/student/lesson/{{ a.lesson_lang }}/{{ a.lesson_id }}">Open</a>
+
+                  <form method="post" action="/student/assignment/{{ a.id }}/comment" class="form" style="margin-top: 10px; gap: 10px;">
+                    <input name="comment" placeholder="Comment to your teacher" required>
+                    <button class="btn btn-ghost" type="submit">Send</button>
+                  </form>
                 </div>
               </div>
             {% endfor %}
