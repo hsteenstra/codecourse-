@@ -1,205 +1,209 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="card class-header">
-  <div class="class-banner" aria-hidden="true"></div>
-  <div class="class-header-inner">
-    <div class="row" style="justify-content: space-between; align-items: start; flex-wrap: wrap;">
-      <div>
-        <h1 style="color: var(--text);">{{ classroom.name }}</h1>
-        <p class="subtitle">Class code: <strong>{{ classroom.code }}</strong></p>
+<div class="class-header-alt">
+  <div>
+    <h1>{{ classroom.name }}</h1>
+    <p class="subtitle">Class code: <strong>{{ classroom.code }}</strong></p>
+  </div>
+  <div class="class-actions">
+    <form method="post" action="/teacher/classroom/{{ classroom.id }}/delete" onsubmit="return confirm('Delete this classroom? This cannot be undone.');">
+      <button class="btn btn-ghost" type="submit">Delete class</button>
+    </form>
+  </div>
+</div>
+
+<div class="classroom-shell">
+  <aside class="class-sidebar">
+    <div class="panel">
+      <div class="panel-title">Class tools</div>
+      <div class="tabs-row" role="tablist" aria-label="Classroom sections" style="margin-top: 10px;">
+        <button class="tab-btn active" type="button" data-tab="stream">Stream</button>
+        <button class="tab-btn" type="button" data-tab="classwork">Classwork</button>
+        <button class="tab-btn" type="button" data-tab="people">People</button>
+        <button class="tab-btn" type="button" data-tab="grades">Grades</button>
       </div>
-      <div class="row" style="gap: 10px; flex-wrap: wrap;">
-        <form method="post" action="/teacher/classroom/{{ classroom.id }}/delete" onsubmit="return confirm('Delete this classroom? This cannot be undone.');">
-          <button class="btn btn-danger" type="submit">Delete class</button>
+    </div>
+
+    <div class="panel" style="margin-top: 16px;">
+      <div class="panel-title">Invite link</div>
+      <div class="class-link" style="margin-top: 8px;">
+        <input readonly value="{{ request.host_url }}join/{{ classroom.code }}" aria-label="Invite link">
+        <button class="btn btn-secondary" type="button" onclick="navigator.clipboard.writeText('{{ request.host_url }}join/{{ classroom.code }}')">Copy</button>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top: 16px;">
+      <div class="panel-title">Quick stats</div>
+      <div class="chips" style="margin-top: 8px;">
+        <div class="chip">Students: <strong>{{ students|length }}</strong></div>
+        <div class="chip">Assignments: <strong>{{ assignments|length }}</strong></div>
+      </div>
+    </div>
+  </aside>
+
+  <section class="class-main">
+    <div id="tab-stream" class="stack">
+      <div class="panel">
+        <h2>Post an announcement</h2>
+        <form method="post" action="/teacher/classroom/{{ classroom.id }}/announce" class="form" style="margin-top: 10px;">
+          <textarea name="message" rows="3" placeholder="Share an update with your class..." required></textarea>
+          <button class="btn btn-primary" type="submit">Post</button>
         </form>
       </div>
-    </div>
 
-    <div class="class-meta">
-      <span class="pill-tag">Students: {{ students|length }}</span>
-      <span class="pill-tag">Assignments: {{ assignments|length }}</span>
-    </div>
-
-    <div class="class-link">
-      <input readonly value="{{ request.host_url }}join/{{ classroom.code }}" aria-label="Invite link">
-      <button class="btn btn-secondary" type="button" onclick="navigator.clipboard.writeText('{{ request.host_url }}join/{{ classroom.code }}')">Copy invite link</button>
-    </div>
-
-    <div class="tabs-row" role="tablist" aria-label="Classroom sections">
-      <button class="tab-btn active" type="button" data-tab="stream">Stream</button>
-      <button class="tab-btn" type="button" data-tab="classwork">Classwork</button>
-      <button class="tab-btn" type="button" data-tab="people">People</button>
-      <button class="tab-btn" type="button" data-tab="grades">Grades</button>
-    </div>
-  </div>
-</div>
-
-<div id="tab-stream" class="stack">
-  <div class="card card-pad-lg" style="background: rgba(255,255,255,0.9);">
-    <h2>Post an announcement</h2>
-    <form method="post" action="/teacher/classroom/{{ classroom.id }}/announce" class="form" style="margin-top: 10px;">
-      <textarea name="message" rows="3" placeholder="Share an update with your class..." required></textarea>
-      <button class="btn btn-primary" type="submit">Post</button>
-    </form>
-  </div>
-
-  {% if stream_items %}
-    {% for item in stream_items %}
-      <div class="stream-item">
-        <div class="row" style="justify-content: space-between; align-items: baseline;">
-          <div class="stream-title">{{ item.title }}</div>
-          <div class="pill-tag">{{ item.kind }}</div>
-        </div>
-        <div class="stream-body" style="white-space: pre-line;">{{ item.body }}</div>
-        <div class="muted" style="margin-top: 8px; font-weight: 800;">{{ item.author_name }} • {{ item.created_at|fmt_dt }}</div>
-      </div>
-    {% endfor %}
-  {% else %}
-    <div class="card card-pad-lg">
-      <h2>No posts yet</h2>
-      <p class="subtitle">Announcements and assignments will show up here.</p>
-    </div>
-  {% endif %}
-
-  <div class="card card-pad-lg">
-    <h2>Student comments</h2>
-    {% if comments %}
-      <div class="stack" style="margin-top: 10px;">
-        {% for c in comments %}
+      {% if stream_items %}
+        {% for item in stream_items %}
           <div class="stream-item">
-            <div class="row" style="justify-content: space-between; align-items: baseline;">
-              <div class="stream-title">{{ c.name }} (@{{ c.username }})</div>
-              <div class="pill-tag">{{ c.lesson_lang|upper }} {{ c.lesson_id }}</div>
-            </div>
-            <div class="stream-body">{{ c.student_comment }}</div>
+            <div class="stream-title">{{ item.title }}</div>
+            <div class="stream-body" style="white-space: pre-line;">{{ item.body }}</div>
+            <div class="stream-meta">{{ item.author_name }} • {{ item.created_at|fmt_dt }}</div>
           </div>
         {% endfor %}
-      </div>
-    {% else %}
-      <p class="subtitle" style="margin-top: 8px;">No comments yet.</p>
-    {% endif %}
-  </div>
-</div>
+      {% else %}
+        <div class="panel">
+          <h2>No posts yet</h2>
+          <p class="subtitle">Announcements and assignments will show up here.</p>
+        </div>
+      {% endif %}
 
-<div id="tab-classwork" class="stack" style="display:none;">
-  <div class="card card-pad-lg">
-    <h2>Create an assignment</h2>
-    <form method="post" action="/teacher/classroom/{{ classroom.id }}/assignments/create" class="form" style="margin-top: 10px;">
-      <label>Lesson</label>
-      <select name="lesson_key" required>
-        <option disabled selected>Select a lesson</option>
-        {% for lang in languages %}
-          {% if lang.enabled %}
-            {% for lesson in lang.lessons %}
-              <option value="{{ lang.id }}:{{ lesson.id }}">{{ lang.name }} • {{ lesson.title }}</option>
+      <div class="panel">
+        <h2>Student comments</h2>
+        {% if comments %}
+          <div class="stack" style="margin-top: 10px;">
+            {% for c in comments %}
+              <div class="stream-item">
+                <div class="stream-title">{{ c.name }} (@{{ c.username }})</div>
+                <div class="stream-body">{{ c.student_comment }}</div>
+              </div>
             {% endfor %}
-          {% endif %}
-        {% endfor %}
-      </select>
-      <div class="form-row">
-        <div class="span-6">
-          <label>Due date (optional)</label>
-          <input type="date" name="due_date">
-        </div>
-        <div class="span-6">
-          <label>Note (optional)</label>
-          <input name="comment" placeholder="Add a note for students">
-        </div>
+          </div>
+        {% else %}
+          <p class="subtitle" style="margin-top: 8px;">No comments yet.</p>
+        {% endif %}
       </div>
-      <button class="btn btn-primary" type="submit">Post assignment</button>
-    </form>
-  </div>
+    </div>
 
-  <div class="card card-pad-lg">
-    <h2>Assignments</h2>
-    {% if assignments %}
-      <div class="stack" style="margin-top: 10px;">
-        {% for a in assignments %}
-          <div class="assignment-row">
-            <div>
-              <div style="font-weight: 900;">{{ a.lesson_lang|upper }} Lesson {{ a.lesson_id }}</div>
-              {% if a.comment %}<div class="muted" style="margin-top: 4px;">Note: {{ a.comment }}</div>{% endif %}
-              {% if a.due_date %}<div class="muted" style="margin-top: 4px;">Due: {{ a.due_date }}</div>{% endif %}
+    <div id="tab-classwork" class="stack" style="display:none;">
+      <div class="panel">
+        <h2>Create an assignment</h2>
+        <form method="post" action="/teacher/classroom/{{ classroom.id }}/assignments/create" class="form" style="margin-top: 10px;">
+          <label>Lesson</label>
+          <select name="lesson_key" required>
+            <option disabled selected>Select a lesson</option>
+            {% for lang in languages %}
+              {% if lang.enabled %}
+                {% for lesson in lang.lessons %}
+                  <option value="{{ lang.id }}:{{ lesson.id }}">{{ lang.name }} • {{ lesson.title }}</option>
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+          </select>
+          <div class="form-row">
+            <div class="span-6">
+              <label>Due date (optional)</label>
+              <input type="date" name="due_date">
             </div>
-            <div class="assignment-actions">
-              <span class="pill-tag">{{ a.completed_count or 0 }}/{{ a.total_subs or 0 }} completed</span>
+            <div class="span-6">
+              <label>Note (optional)</label>
+              <input name="comment" placeholder="Add a note for students">
             </div>
           </div>
-        {% endfor %}
+          <button class="btn btn-primary" type="submit">Post assignment</button>
+        </form>
       </div>
-    {% else %}
-      <p class="subtitle" style="margin-top: 8px;">No assignments posted yet.</p>
-    {% endif %}
-  </div>
 
-  <div class="card card-pad-lg">
-    <h2>Invite students</h2>
-    <p class="subtitle">Use the invite link above, or keep a list of invited emails.</p>
-    <form method="post" action="/teacher/classroom/{{ classroom.id }}/invite" class="form" style="margin-top: 10px;">
-      <input type="email" name="email" placeholder="Student email" required>
-      <button class="btn btn-secondary" type="submit">Save invite</button>
-    </form>
-    {% if invites %}
-      <div class="stack" style="margin-top: 10px;">
-        {% for invite in invites %}
-          <div class="stream-item">
-            <div class="stream-title">{{ invite.email }}</div>
-            <div class="muted" style="margin-top: 6px; font-weight: 700;">Invited: {{ invite.invited_at }}</div>
+      <div class="panel">
+        <h2>Assignments</h2>
+        {% if assignments %}
+          <div class="stack" style="margin-top: 10px;">
+            {% for a in assignments %}
+              <div class="assignment-row">
+                <div>
+                  <div class="strong">{{ a.lesson_lang|upper }} Lesson {{ a.lesson_id }}</div>
+                  {% if a.comment %}<div class="muted" style="margin-top: 4px;">Note: {{ a.comment }}</div>{% endif %}
+                  {% if a.due_date %}<div class="muted" style="margin-top: 4px;">Due: {{ a.due_date }}</div>{% endif %}
+                </div>
+                <div class="assignment-actions">
+                  <span class="pill-tag">{{ a.completed_count or 0 }}/{{ a.total_subs or 0 }} completed</span>
+                </div>
+              </div>
+            {% endfor %}
           </div>
-        {% endfor %}
+        {% else %}
+          <p class="subtitle" style="margin-top: 8px;">No assignments posted yet.</p>
+        {% endif %}
       </div>
-    {% endif %}
-  </div>
-</div>
 
-<div id="tab-people" class="stack" style="display:none;">
-  <div class="card card-pad-lg">
-    <h2>Students</h2>
-    {% if students %}
-      <div class="stack" style="margin-top: 10px;">
-        {% for s in students %}
-          <div class="assignment-row">
-            <div>
-              <div style="font-weight: 900;">{{ s.name }}</div>
-              <div class="muted">@{{ s.username }}</div>
-            </div>
+      <div class="panel">
+        <h2>Invite students</h2>
+        <p class="subtitle">Use the invite link above, or keep a list of invited emails.</p>
+        <form method="post" action="/teacher/classroom/{{ classroom.id }}/invite" class="form" style="margin-top: 10px;">
+          <input type="email" name="email" placeholder="Student email" required>
+          <button class="btn btn-secondary" type="submit">Save invite</button>
+        </form>
+        {% if invites %}
+          <div class="stack" style="margin-top: 10px;">
+            {% for invite in invites %}
+              <div class="stream-item">
+                <div class="stream-title">{{ invite.email }}</div>
+                <div class="stream-body">Invited: {{ invite.invited_at|fmt_dt }}</div>
+              </div>
+            {% endfor %}
           </div>
-        {% endfor %}
+        {% endif %}
       </div>
-    {% else %}
-      <p class="subtitle" style="margin-top: 8px;">No students have joined yet.</p>
-    {% endif %}
-  </div>
-</div>
+    </div>
 
-<div id="tab-grades" class="stack" style="display:none;">
-  <div class="card card-pad-lg">
-    <h2>Grades</h2>
-    <p class="subtitle">Enter grades out of 10. Students will see updates immediately.</p>
-
-    {% if submissions %}
-      <div class="stack" style="margin-top: 10px;">
-        {% for s in submissions %}
-          <div class="assignment-row">
-            <div>
-              <div style="font-weight: 900;">{{ s.name }} (@{{ s.username }})</div>
-              <div class="muted">{{ s.lesson_lang|upper }} Lesson {{ s.lesson_id }} • Status: {{ s.status }}</div>
-              {% if s.score is not none %}<div class="muted" style="margin-top: 4px;">Quiz score: {{ s.score }}%</div>{% endif %}
-            </div>
-            <div class="assignment-actions">
-              <form method="post" action="/teacher/submission/{{ s.submission_id }}/grade" class="row" style="gap: 10px;">
-                <input name="grade" type="number" min="0" max="10" placeholder="/10" value="{{ s.grade_out_of_10 or '' }}" style="width: 90px;">
-                <button class="btn btn-secondary" type="submit">Save</button>
-              </form>
-            </div>
+    <div id="tab-people" class="stack" style="display:none;">
+      <div class="panel">
+        <h2>Students</h2>
+        {% if students %}
+          <div class="stack" style="margin-top: 10px;">
+            {% for s in students %}
+              <div class="assignment-row">
+                <div>
+                  <div class="strong">{{ s.name }}</div>
+                  <div class="muted">@{{ s.username }}</div>
+                </div>
+              </div>
+            {% endfor %}
           </div>
-        {% endfor %}
+        {% else %}
+          <p class="subtitle" style="margin-top: 8px;">No students have joined yet.</p>
+        {% endif %}
       </div>
-    {% else %}
-      <p class="subtitle" style="margin-top: 8px;">No submissions yet.</p>
-    {% endif %}
-  </div>
+    </div>
+
+    <div id="tab-grades" class="stack" style="display:none;">
+      <div class="panel">
+        <h2>Grades</h2>
+        <p class="subtitle">Enter grades out of 10. Students will see updates immediately.</p>
+
+        {% if submissions %}
+          <div class="stack" style="margin-top: 10px;">
+            {% for s in submissions %}
+              <div class="assignment-row">
+                <div>
+                  <div class="strong">{{ s.name }} (@{{ s.username }})</div>
+                  <div class="muted">{{ s.lesson_lang|upper }} Lesson {{ s.lesson_id }} • Status: {{ s.status }}</div>
+                  {% if s.score is not none %}<div class="muted" style="margin-top: 4px;">Quiz score: {{ s.score }}%</div>{% endif %}
+                </div>
+                <div class="assignment-actions">
+                  <form method="post" action="/teacher/submission/{{ s.submission_id }}/grade" class="row" style="gap: 10px;">
+                    <input name="grade" type="number" min="0" max="10" placeholder="/10" value="{{ s.grade_out_of_10 or '' }}" style="width: 90px;">
+                    <button class="btn btn-secondary" type="submit">Save</button>
+                  </form>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="subtitle" style="margin-top: 8px;">No submissions yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
 </div>
 
 <script>

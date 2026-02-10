@@ -453,9 +453,10 @@ def get_stream_posts_for_teacher(classroom_id: int):
     conn = get_db()
     rows = conn.execute(
         """
-        SELECT p.*, u.name as author_name
+        SELECT p.*, u.name as author_name, c.name as classroom_name
         FROM stream_posts p
         JOIN users u ON u.id = p.author_id
+        JOIN classrooms c ON c.id = p.classroom_id
         WHERE p.classroom_id = ?
         ORDER BY p.created_at DESC
         LIMIT 30
@@ -472,9 +473,10 @@ def get_stream_posts_for_student(classroom_ids: list[int], student_id: int):
     placeholders = ",".join("?" for _ in classroom_ids)
     conn = get_db()
     query = f"""
-        SELECT p.*, u.name as author_name
+        SELECT p.*, u.name as author_name, c.name as classroom_name
         FROM stream_posts p
         JOIN users u ON u.id = p.author_id
+        JOIN classrooms c ON c.id = p.classroom_id
         WHERE p.classroom_id IN ({placeholders})
           AND (p.audience = 'class' OR (p.audience = 'student' AND p.student_id = ?))
         ORDER BY p.created_at DESC

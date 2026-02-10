@@ -32,10 +32,10 @@
                   <h3 style="font-weight: 900;">{{ lang.name }}</h3>
                   <div class="muted">{{ lang.description }}</div>
                 </div>
-                <div class="pill-tag {{ 'good' if lang.complete else 'todo' }}">{{ lang.percent }}%</div>
-              </div>
-              <div class="progress"><div style="width: {{ lang.percent }}%"></div></div>
-            </a>
+        <div class="pill-tag {{ 'good' if lang.complete else 'todo' }}">{{ lang.percent }}%</div>
+      </div>
+      <div class="progress"><div style="width: {{ lang.percent }}%"></div></div>
+    </a>
           {% else %}
             <div class="course" style="opacity: 0.55; cursor: not-allowed;">
               <div class="row" style="justify-content: space-between; align-items: baseline;">
