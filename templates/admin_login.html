@@ -1,20 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="grid">
-  <div class="col-6">
-    <div class="card card-pad-lg">
-      <h1>Admin login</h1>
-      <p class="subtitle">Manage lessons and tracks.</p>
-      <form method="post" class="form" style="margin-top: 12px;">
-        <label>Username</label>
-        <input name="username" placeholder="Admin username" required>
-        <label>Password</label>
-        <input type="password" name="password" placeholder="Admin password" required>
-        <button class="btn btn-primary" type="submit">Sign in</button>
-      </form>
-      <p class="muted" style="margin-top: 12px; font-weight: 800;">Default: <strong>admin / admin123</strong>. Change with <code>CODECOURSE_ADMIN_USER</code> and <code>CODECOURSE_ADMIN_PASS</code>.</p>
-    </div>
+<section class="stage">
+  <div class="kicker">CodeCourse • Admin</div>
+  <h1 style="margin-top: 14px;">Admin login</h1>
+  <p class="subtitle">Manage tracks, lessons, videos, and quizzes.</p>
+</section>
+
+<div style="max-width: 640px; margin: 18px auto 0;">
+  <div class="card card-pad-lg">
+    <form method="post" class="form">
+      <label>Username</label>
+      <input name="username" placeholder="Admin username" required>
+      <label>Password</label>
+      <input type="password" name="password" placeholder="Admin password" required>
+      <button class="btn btn-primary" type="submit">Sign in</button>
+    </form>
+    <p class="muted" style="margin-top: 12px; font-weight: 700;">Tip: On Render, set <code>CODECOURSE_ADMIN_USER</code> and <code>CODECOURSE_ADMIN_PASS</code> in your environment variables.</p>
   </div>
 </div>
 

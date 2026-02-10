@@ -18,19 +18,23 @@
     </div>
 
     <div class="card card-pad-lg">
-      <div class="row" style="justify-content: space-between; align-items: baseline;">
+      <div class="row between baseline wrap">
         <h2>Your tracks</h2>
-        <span class="muted" style="font-weight: 800;">Progress is saved automatically</span>
+        <span class="muted strong">Progress is saved automatically</span>
       </div>
 
-      <div class="course-grid" style="margin-top: 12px;">
+      <div class="course-grid" style="margin-top: 14px;">
         {% for lang in languages %}
           {% if lang.enabled %}
             <a class="course" href="/student/language/{{ lang.id }}">
-              <div class="row" style="justify-content: space-between; align-items: baseline;">
-                <div>
-                  <h3 style="font-weight: 900;">{{ lang.name }}</h3>
-                  <div class="muted">{{ lang.description }}</div>
+              <div class="row between baseline wrap">
+                {% set short = 'PY' if lang.id == 'python' else ('JS' if lang.id == 'javascript' else lang.name[:2]|upper) %}
+                <div class="row" style="gap: 14px; align-items: center;">
+                  <div class="lang-badge {{ lang.id }}">{{ short }}</div>
+                  <div>
+                    <h3 style="font-weight: 900;">{{ lang.name }}</h3>
+                    <div class="muted">{{ lang.description }}</div>
+                  </div>
                 </div>
         <div class="pill-tag {{ 'good' if lang.complete else 'todo' }}">{{ lang.percent }}%</div>
       </div>
@@ -38,10 +42,14 @@
     </a>
           {% else %}
             <div class="course" style="opacity: 0.55; cursor: not-allowed;">
-              <div class="row" style="justify-content: space-between; align-items: baseline;">
-                <div>
-                  <h3 style="font-weight: 900;">{{ lang.name }}</h3>
-                  <div class="muted">{{ lang.description }}</div>
+              <div class="row between baseline wrap">
+                {% set short = lang.name[:2]|upper %}
+                <div class="row" style="gap: 14px; align-items: center;">
+                  <div class="lang-badge {{ lang.id }}">{{ short }}</div>
+                  <div>
+                    <h3 style="font-weight: 900;">{{ lang.name }}</h3>
+                    <div class="muted">{{ lang.description }}</div>
+                  </div>
                 </div>
                 <div class="pill-tag">Coming soon</div>
               </div>
@@ -56,7 +64,7 @@
   <aside class="col-4">
     {% if notifications %}
       <div class="card card-pad-lg">
-        <div class="row" style="justify-content: space-between;">
+        <div class="row between wrap">
           <h2>Notifications</h2>
           <form method="post" action="/notifications/read">
             <button class="btn btn-ghost" type="submit">Mark read</button>
@@ -89,7 +97,8 @@
 
     <div class="card card-pad-lg">
       <h2>Code For ME</h2>
-      <p class="subtitle">A student-first pathway into programming — built for classrooms and independent learners.</p>
+      <p class="subtitle">A student-first pathway into programming — built in Maine for classrooms and independent learners.</p>
+      <p class="muted" style="margin-top: 10px; font-weight: 700;">CodeCourse is the learning app: tracks, checkpoints, and classroom tools.</p>
       <a class="btn btn-secondary" href="https://codeforme.org" target="_blank" rel="noopener" style="margin-top: 10px;">Visit codeforme.org</a>
     </div>
   </aside>

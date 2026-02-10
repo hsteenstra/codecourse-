@@ -1,17 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="grid">
-  <div class="col-6">
-    <div class="card card-pad-lg">
-      <h1>Create a classroom</h1>
-      <p class="subtitle">Give your class a name. You’ll get a class code and invite link.</p>
-      <form method="post" class="form" style="margin-top: 12px;">
-        <label>Classroom name</label>
-        <input name="name" placeholder="e.g., Period 2 Computer Science" required>
-        <button class="btn btn-primary" type="submit">Create</button>
-      </form>
-    </div>
+<section class="stage">
+  <div class="kicker">CodeCourse • Teacher setup</div>
+  <h1 style="margin-top: 14px;">Create a classroom</h1>
+  <p class="subtitle">Name your class — we’ll generate a code and an invite link for students.</p>
+</section>
+
+<div style="max-width: 640px; margin: 18px auto 0;">
+  <div class="card card-pad-lg">
+    <form method="post" class="form">
+      <label>Classroom name</label>
+      <input name="name" placeholder="e.g., Period 2 Computer Science" required>
+      <button class="btn btn-primary" type="submit">Create classroom</button>
+    </form>
   </div>
 </div>
 

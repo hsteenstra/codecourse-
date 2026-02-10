@@ -15,16 +15,16 @@
     </div>
 
     <div class="card card-pad-lg">
-      <div class="row" style="justify-content: space-between; align-items: baseline;">
+      <div class="row between baseline wrap">
         <h2>Your classes</h2>
-        <span class="muted" style="font-weight: 800;">Share the class code or invite link</span>
+        <span class="muted strong">Share the class code or invite link</span>
       </div>
 
       {% if classrooms %}
-        <div class="course-grid" style="margin-top: 12px;">
+        <div class="course-grid" style="margin-top: 14px;">
           {% for c in classrooms %}
             <a class="course" href="/teacher/classroom/{{ c.id }}">
-              <div class="row" style="justify-content: space-between; align-items: baseline;">
+              <div class="row between baseline wrap">
                 <div>
                   <h3 style="font-weight: 900;">{{ c.name }}</h3>
                   <div class="muted">Code: <strong>{{ c.code }}</strong></div>
@@ -43,7 +43,7 @@
   <aside class="col-4">
     {% if notifications %}
       <div class="card card-pad-lg">
-        <div class="row" style="justify-content: space-between;">
+        <div class="row between wrap">
           <h2>Notifications</h2>
           <form method="post" action="/notifications/read">
             <button class="btn btn-ghost" type="submit">Mark read</button>

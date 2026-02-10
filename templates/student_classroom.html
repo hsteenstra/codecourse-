@@ -1,14 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="classroom-shell">
+<section class="stage">
+  <div class="kicker">CodeCourse • Student</div>
+  <h1 style="margin-top: 14px;">Classroom</h1>
+  <p class="subtitle">Stream updates and assignments from your classes.</p>
+  <div class="chips">
+    <div class="chip">Classes: <strong>{{ classrooms|length }}</strong></div>
+    <div class="chip">Assignments: <strong>{{ assignments|length }}</strong></div>
+  </div>
+</section>
+
+<div class="classroom-shell" style="margin-top: 18px;">
   <aside class="class-sidebar">
     <div class="panel">
       <div class="panel-title">Your classes</div>
       {% if classrooms %}
         <div class="class-list">
+          <button class="class-tab active" type="button" data-classroom-id="all" data-classroom-name="All classes">
+            <span>All classes</span>
+            <small>See everything in one feed</small>
+          </button>
           {% for c in classrooms %}
-            <button class="class-tab" type="button">
+            <button class="class-tab" type="button" data-classroom-id="{{ c.id }}" data-classroom-name="{{ c.name }}">
               <span>{{ c.name }}</span>
               <small>Code: {{ c.code }}</small>
             </button>
@@ -21,7 +35,7 @@
 
     <div class="panel" style="margin-top: 16px;">
       <div class="panel-title">Join a class</div>
-      <p class="muted" style="margin-top: 6px;">Enter a classroom code from your teacher.</p>
+      <p class="muted" style="margin-top: 6px;">Enter the code your teacher gives you.</p>
       <form method="post" class="form" style="margin-top: 10px;">
         <input name="code" placeholder="Class code" required>
         <button class="btn btn-primary" type="submit">Join class</button>
@@ -32,8 +46,8 @@
   <section class="class-main">
     <div class="class-header-alt">
       <div>
-        <h1>Classroom</h1>
-        <p class="subtitle">Stream updates and open assignments from your classes.</p>
+        <h1 id="classroom-title">All classes</h1>
+        <p class="subtitle" id="classroom-subtitle">Stream updates and open assignments from your classes.</p>
       </div>
       <div class="tabs-row" role="tablist" aria-label="Classroom sections">
         <button class="tab-btn active" type="button" data-tab="stream">Stream</button>
@@ -44,7 +58,7 @@
     <div id="tab-stream" class="stack">
       {% if stream_items %}
         {% for item in stream_items %}
-          <div class="stream-item">
+          <div class="stream-item" data-classroom-id="{{ item.classroom_id }}">
             <div class="stream-title">{{ item.title }}</div>
             <div class="stream-body" style="white-space: pre-line;">{{ item.body }}</div>
             <div class="stream-meta">{{ item.classroom_name }} • {{ item.created_at|fmt_dt }}</div>
@@ -64,7 +78,7 @@
         {% if assignments %}
           <div class="stack" style="margin-top: 12px;">
             {% for a in assignments %}
-              <div class="assignment-row">
+              <div class="assignment-row" data-classroom-id="{{ a.classroom_id }}">
                 <div>
                   <div class="strong">{{ a.lesson_lang|upper }} Lesson {{ a.lesson_id }}</div>
                   <div class="muted">{{ a.classroom_name }}</div>
@@ -113,6 +127,28 @@ tabButtons.forEach(btn => {
     classwork.style.display = which === 'classwork' ? 'grid' : 'none';
   });
 });
+
+const classTabs = Array.from(document.querySelectorAll('.class-tab[data-classroom-id]'));
+const titleEl = document.getElementById('classroom-title');
+const subtitleEl = document.getElementById('classroom-subtitle');
+const streamItems = Array.from(document.querySelectorAll('.stream-item[data-classroom-id]'));
+const assignmentItems = Array.from(document.querySelectorAll('.assignment-row[data-classroom-id]'));
+
+function setActiveClassTab(tab) {
+  classTabs.forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  const id = tab.dataset.classroomId;
+  const name = tab.dataset.classroomName;
+
+  if (titleEl) titleEl.textContent = name || 'Classroom';
+  if (subtitleEl) subtitleEl.textContent = id === 'all' ? 'Stream updates and open assignments from your classes.' : 'Focused view of this class.';
+
+  const showAll = id === 'all';
+  streamItems.forEach(el => el.style.display = (showAll || el.dataset.classroomId === id) ? '' : 'none');
+  assignmentItems.forEach(el => el.style.display = (showAll || el.dataset.classroomId === id) ? '' : 'none');
+}
+
+classTabs.forEach(tab => tab.addEventListener('click', () => setActiveClassTab(tab)));
 </script>
 
 {% endblock %}

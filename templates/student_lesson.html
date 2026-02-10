@@ -2,15 +2,15 @@
 {% block content %}
 
 <div class="lesson-shell">
-  <div class="card card-pad-lg">
-    <div class="lesson-header">
-      <div>
-        <h1>{{ lesson.title }}</h1>
-        <p class="subtitle">Read, watch, then take the quiz to complete this lesson.</p>
-      </div>
-      <div class="lesson-xp">XP {{ lesson.xp }}</div>
+  <section class="stage">
+    <div class="kicker">{{ lang.name }} • Lesson {{ lesson.id }}</div>
+    <h1 style="margin-top: 14px;">{{ lesson.title }}</h1>
+    <p class="subtitle">Read, watch, then take the quiz to complete this lesson.</p>
+    <div class="chips">
+      <div class="chip">XP: <strong>{{ lesson.xp }}</strong></div>
+      <div class="chip">Pass score: <strong>70%</strong></div>
     </div>
-  </div>
+  </section>
 
   {% if quiz_result and quiz_result.all_correct %}
     <div class="card card-pad-lg" style="text-align:center;">
@@ -26,6 +26,13 @@
     </div>
   {% else %}
     <div class="lesson-steps">
+      <div class="lesson-stepper" aria-hidden="true">
+        <div class="stepper-pill active" data-step-pill="0">Start</div>
+        <div class="stepper-pill" data-step-pill="1">Reading</div>
+        <div class="stepper-pill" data-step-pill="2">Video</div>
+        <div class="stepper-pill" data-step-pill="3">Quiz</div>
+      </div>
+
       <div class="step" data-step="0">
         <div class="lesson-card">
           <h2>Start</h2>
@@ -36,18 +43,24 @@
 
       <div class="step" data-step="1">
         <div class="lesson-card">
-          <div class="row" style="justify-content: space-between; align-items: baseline;">
+          <div class="row between baseline wrap">
             <h2>Reading</h2>
             <span class="pill-tag">Step 1 of 3</span>
           </div>
-          <p class="reading-text" id="reading-text" style="margin-top: 10px;">{{ lesson.reading }}</p>
-          <button class="btn btn-ghost" type="button" id="highlight-btn">Highlight selection</button>
+          <div class="reading-grid">
+            <div>
+              <p class="reading-text" id="reading-text">{{ lesson.reading }}</p>
+              <button class="btn btn-ghost" type="button" id="highlight-btn" style="margin-top: 12px;">Highlight selection</button>
+            </div>
 
-          <form method="post" action="/student/lesson/{{ lang.id }}/{{ lesson.id }}/notes" class="form" style="margin-top: 12px;">
-            <label>Notes</label>
-            <textarea name="notes" rows="6" placeholder="Write your notes here...">{{ notes }}</textarea>
-            <button class="btn btn-secondary" type="submit">Save notes</button>
-          </form>
+            <div class="notes-card">
+              <form method="post" action="/student/lesson/{{ lang.id }}/{{ lesson.id }}/notes" class="form">
+                <label>Notes</label>
+                <textarea name="notes" rows="10" placeholder="Write your notes here...">{{ notes }}</textarea>
+                <button class="btn btn-secondary" type="submit">Save notes</button>
+              </form>
+            </div>
+          </div>
 
           <button class="btn btn-primary" type="button" data-next style="margin-top: 12px;">Next: Video</button>
         </div>
@@ -55,7 +68,7 @@
 
       <div class="step" data-step="2">
         <div class="lesson-card">
-          <div class="row" style="justify-content: space-between; align-items: baseline;">
+          <div class="row between baseline wrap">
             <h2>Video</h2>
             <span class="pill-tag">Step 2 of 3</span>
           </div>
@@ -74,7 +87,7 @@
 
       <div class="step" data-step="3">
         <div class="lesson-card">
-          <div class="row" style="justify-content: space-between; align-items: baseline;">
+          <div class="row between baseline wrap">
             <h2>Quiz</h2>
             <span class="pill-tag">Step 3 of 3</span>
           </div>
@@ -126,12 +139,15 @@ confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } });
 <script>
 const steps = Array.from(document.querySelectorAll('.step'));
 const nextButtons = document.querySelectorAll('[data-next]');
+const stepperPills = Array.from(document.querySelectorAll('[data-step-pill]'));
 let current = 0;
 
 function showStep(idx) {
   steps.forEach(step => step.style.display = 'none');
   const target = steps.find(s => Number(s.dataset.step) === idx);
   if (target) target.style.display = 'block';
+
+  stepperPills.forEach(p => p.classList.toggle('active', Number(p.dataset.stepPill) === idx));
 }
 
 nextButtons.forEach(btn => {

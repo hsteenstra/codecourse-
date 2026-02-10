@@ -1,14 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="card hero card-pad-lg">
-  <div>
-    <h1>Admin Dashboard</h1>
-    <p class="subtitle">Add lessons, manage languages, and keep your content organized.</p>
-  </div>
+<section class="stage">
+  <div class="kicker">CodeCourse • Admin</div>
+  <h1 style="margin-top: 14px;">Content dashboard</h1>
+  <p class="subtitle">Add lessons, manage tracks, and keep everything organized so it’s easy to update later.</p>
 </section>
 
-<div class="admin-layout">
+<div class="admin-layout" style="margin-top: 18px;">
   <div class="card card-pad-lg">
     <h2>Add Lesson</h2>
     <form method="post" action="/admin/lesson/create" class="form" style="margin-top: 10px;">

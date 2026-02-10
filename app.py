@@ -5,6 +5,7 @@ import os
 import random
 import sqlite3
 import string
+import time
 from datetime import datetime, date, timedelta
 from pathlib import Path
 
@@ -23,6 +24,17 @@ ADMIN_PASSWORD = os.environ.get("CODECOURSE_ADMIN_PASS", "admin123")
 SUPPORT_EMAIL = "codeformaine@gmail.com"
 GMAIL_USER = os.environ.get("CODECOURSE_GMAIL_USER")
 GMAIL_APP_PASS = os.environ.get("CODECOURSE_GMAIL_PASS")
+
+
+@app.context_processor
+def inject_static_version():
+    """Cache-bust static assets when files change (helps on Render + browsers)."""
+    try:
+        css_path = BASE_DIR / "static" / "style.css"
+        static_version = int(css_path.stat().st_mtime)
+    except Exception:
+        static_version = int(time.time())
+    return {"static_version": static_version}
 
 
 # ---------------- DB ----------------
@@ -1384,6 +1396,16 @@ def teacher_classroom(classroom_id):
         conn.close()
         return redirect(url_for("teacher_home"))
 
+    teacher_classrooms = conn.execute(
+        """
+        SELECT id, name, code
+        FROM classrooms
+        WHERE teacher_id = ?
+        ORDER BY created_at DESC
+        """,
+        (session["user_id"],),
+    ).fetchall()
+
     students = conn.execute(
         """
         SELECT u.id, u.name, u.username
@@ -1450,6 +1472,7 @@ def teacher_classroom(classroom_id):
 
     return render_template(
         "teacher_classroom.html",
+        classrooms=teacher_classrooms,
         classroom=classroom,
         students=students,
         assignments=assignments,

@@ -1,15 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="card hero card-pad-lg">
-  <div>
-    <h1>Edit Lesson</h1>
-    <p class="subtitle">{{ lang.name }} • Lesson {{ lesson.id }}</p>
-  </div>
+<section class="stage">
+  <div class="kicker">CodeCourse • Admin</div>
+  <h1 style="margin-top: 14px;">Edit lesson</h1>
+  <p class="subtitle">{{ lang.name }} • Lesson {{ lesson.id }}</p>
 </section>
 
-<div class="card card-pad-lg">
-  <form method="post" class="form" style="margin-top: 10px;">
+<div class="card card-pad-lg" style="margin-top: 18px;">
+  <form method="post" class="form">
     <input name="title" placeholder="Lesson title" value="{{ lesson.title }}" required>
     <input name="xp" type="number" min="50" max="400" placeholder="XP" value="{{ lesson.xp }}">
     <textarea name="reading" rows="8" placeholder="Reading content" required>{{ lesson.reading }}</textarea>
@@ -17,7 +16,7 @@
     <textarea name="quiz_text" rows="8" placeholder="Quiz format: Question | A,B,C,D | Answer" required>{{ quiz_text }}</textarea>
     <button class="btn btn-primary" type="submit">Save Lesson</button>
   </form>
-  <a href="/admin" class="btn btn-secondary" style="margin-top: 12px;">Back to Admin</a>
+  <a href="/admin" class="btn btn-secondary" style="margin-top: 12px;">Back to dashboard</a>
 </div>
 
 {% endblock %}

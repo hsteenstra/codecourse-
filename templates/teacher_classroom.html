@@ -1,27 +1,38 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="class-header-alt">
-  <div>
-    <h1>{{ classroom.name }}</h1>
-    <p class="subtitle">Class code: <strong>{{ classroom.code }}</strong></p>
-  </div>
-  <div class="class-actions">
-    <form method="post" action="/teacher/classroom/{{ classroom.id }}/delete" onsubmit="return confirm('Delete this classroom? This cannot be undone.');">
-      <button class="btn btn-ghost" type="submit">Delete class</button>
-    </form>
-  </div>
-</div>
+<section class="stage">
+  <div class="row between baseline wrap">
+    <div>
+      <div class="kicker">CodeCourse • Teacher</div>
+      <h1 style="margin-top: 14px;">{{ classroom.name }}</h1>
+      <p class="subtitle">Class code: <strong>{{ classroom.code }}</strong></p>
+    </div>
 
-<div class="classroom-shell">
+    <div class="row wrap">
+      <div class="chip">Students: <strong>{{ students|length }}</strong></div>
+      <div class="chip">Assignments: <strong>{{ assignments|length }}</strong></div>
+      <form method="post" action="/teacher/classroom/{{ classroom.id }}/delete" onsubmit="return confirm('Delete this classroom? This cannot be undone.');">
+        <button class="btn btn-danger" type="submit">Delete class</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<div class="classroom-shell" style="margin-top: 18px;">
   <aside class="class-sidebar">
     <div class="panel">
-      <div class="panel-title">Class tools</div>
-      <div class="tabs-row" role="tablist" aria-label="Classroom sections" style="margin-top: 10px;">
-        <button class="tab-btn active" type="button" data-tab="stream">Stream</button>
-        <button class="tab-btn" type="button" data-tab="classwork">Classwork</button>
-        <button class="tab-btn" type="button" data-tab="people">People</button>
-        <button class="tab-btn" type="button" data-tab="grades">Grades</button>
+      <div class="panel-title">Your classes</div>
+      <div class="class-list">
+        {% for c in classrooms %}
+          <a class="class-tab {{ 'active' if c.id == classroom.id else '' }}" href="/teacher/classroom/{{ c.id }}">
+            <span>{{ c.name }}</span>
+            <small>Code: {{ c.code }}</small>
+          </a>
+        {% endfor %}
+      </div>
+      <div style="margin-top: 12px;">
+        <a class="btn btn-primary" href="/teacher/classroom/create">Create classroom</a>
       </div>
     </div>
 
@@ -31,18 +42,24 @@
         <input readonly value="{{ request.host_url }}join/{{ classroom.code }}" aria-label="Invite link">
         <button class="btn btn-secondary" type="button" onclick="navigator.clipboard.writeText('{{ request.host_url }}join/{{ classroom.code }}')">Copy</button>
       </div>
-    </div>
-
-    <div class="panel" style="margin-top: 16px;">
-      <div class="panel-title">Quick stats</div>
-      <div class="chips" style="margin-top: 8px;">
-        <div class="chip">Students: <strong>{{ students|length }}</strong></div>
-        <div class="chip">Assignments: <strong>{{ assignments|length }}</strong></div>
-      </div>
+      <p class="muted" style="margin-top: 10px;">Share this link or the code above with students.</p>
     </div>
   </aside>
 
   <section class="class-main">
+    <div class="class-header-alt">
+      <div>
+        <h2>Classroom</h2>
+        <p class="subtitle">Stream, classwork, people, and grading — all in one place.</p>
+      </div>
+      <div class="tabs-row" role="tablist" aria-label="Classroom sections">
+        <button class="tab-btn active" type="button" data-tab="stream">Stream</button>
+        <button class="tab-btn" type="button" data-tab="classwork">Classwork</button>
+        <button class="tab-btn" type="button" data-tab="people">People</button>
+        <button class="tab-btn" type="button" data-tab="grades">Grades</button>
+      </div>
+    </div>
+
     <div id="tab-stream" class="stack">
       <div class="panel">
         <h2>Post an announcement</h2>

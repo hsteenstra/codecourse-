@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
 
+<section class="stage">
+  <div class="kicker">CodeCourse • Certificate</div>
+  <h1 style="margin-top: 14px;">You finished {{ lang.name }} Basics</h1>
+  <p class="subtitle">Nice work — this certificate is your proof of completion.</p>
+  <div class="row wrap" style="margin-top: 16px;">
+    <button class="btn btn-secondary" type="button" onclick="window.print()">Print</button>
+    <a class="btn btn-ghost" href="/student/language/{{ lang.id }}">Back to track</a>
+  </div>
+</section>
+
 <div class="certificate">
   <div class="certificate-inner">
     <h1>Certificate of Completion</h1>
