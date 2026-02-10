@@ -175,6 +175,25 @@ def init_db():
 
     cur.execute(
         """
+        CREATE TABLE IF NOT EXISTS stream_posts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            classroom_id INTEGER NOT NULL,
+            author_id INTEGER NOT NULL,
+            kind TEXT NOT NULL,
+            title TEXT NOT NULL,
+            body TEXT NOT NULL,
+            audience TEXT NOT NULL, -- 'class' | 'student'
+            student_id INTEGER,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (classroom_id) REFERENCES classrooms (id),
+            FOREIGN KEY (author_id) REFERENCES users (id),
+            FOREIGN KEY (student_id) REFERENCES users (id)
+        );
+        """
+    )
+
+    cur.execute(
+        """
         CREATE TABLE IF NOT EXISTS classroom_invites (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             classroom_id INTEGER NOT NULL,
@@ -202,6 +221,22 @@ def migrate_db():
     notif_names = {c[1] for c in notif_cols}
     if "classroom_id" not in notif_names:
         cur.execute("ALTER TABLE notifications ADD COLUMN classroom_id INTEGER")
+
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS stream_posts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            classroom_id INTEGER NOT NULL,
+            author_id INTEGER NOT NULL,
+            kind TEXT NOT NULL,
+            title TEXT NOT NULL,
+            body TEXT NOT NULL,
+            audience TEXT NOT NULL,
+            student_id INTEGER,
+            created_at TEXT NOT NULL
+        );
+        """
+    )
 
     conn.commit()
     conn.close()
@@ -367,19 +402,59 @@ def get_unread_notifications(user_id: int):
     return rows
 
 
-def get_classroom_stream(classroom_id: int):
+def create_stream_post(
+    classroom_id: int,
+    author_id: int,
+    kind: str,
+    title: str,
+    body: str,
+    audience: str = "class",
+    student_id: int | None = None,
+):
+    conn = get_db()
+    conn.execute(
+        """
+        INSERT INTO stream_posts (classroom_id, author_id, kind, title, body, audience, student_id, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (classroom_id, author_id, kind, title, body, audience, student_id, now_ts()),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_stream_posts_for_teacher(classroom_id: int):
     conn = get_db()
     rows = conn.execute(
         """
-        SELECT n.*, u.name as teacher_name
-        FROM notifications n
-        LEFT JOIN users u ON u.id = n.user_id
-        WHERE n.classroom_id = ?
-        ORDER BY n.created_at DESC
-        LIMIT 15
+        SELECT p.*, u.name as author_name
+        FROM stream_posts p
+        JOIN users u ON u.id = p.author_id
+        WHERE p.classroom_id = ?
+        ORDER BY p.created_at DESC
+        LIMIT 30
         """,
         (classroom_id,),
     ).fetchall()
+    conn.close()
+    return rows
+
+
+def get_stream_posts_for_student(classroom_ids: list[int], student_id: int):
+    if not classroom_ids:
+        return []
+    placeholders = ",".join("?" for _ in classroom_ids)
+    conn = get_db()
+    query = f"""
+        SELECT p.*, u.name as author_name
+        FROM stream_posts p
+        JOIN users u ON u.id = p.author_id
+        WHERE p.classroom_id IN ({placeholders})
+          AND (p.audience = 'class' OR (p.audience = 'student' AND p.student_id = ?))
+        ORDER BY p.created_at DESC
+        LIMIT 30
+    """
+    rows = conn.execute(query, (*classroom_ids, student_id)).fetchall()
     conn.close()
     return rows
 
@@ -1108,10 +1183,8 @@ def student_classroom():
     conn.commit()
     conn.close()
 
-    stream_items = []
-    for c in classrooms:
-        stream_items.extend(get_classroom_stream(c["id"]))
-    stream_items = sorted(stream_items, key=lambda r: r["created_at"], reverse=True)[:20]
+    classroom_ids = [c["id"] for c in classrooms]
+    stream_items = get_stream_posts_for_student(classroom_ids, user_id)
 
     return render_template(
         "student_classroom.html",
@@ -1345,7 +1418,7 @@ def teacher_classroom(classroom_id):
 
     conn.close()
 
-    stream_items = get_classroom_stream(classroom_id)
+    stream_items = get_stream_posts_for_teacher(classroom_id)
 
     return render_template(
         "teacher_classroom.html",
@@ -1434,6 +1507,20 @@ def teacher_create_assignment(classroom_id):
 
     ensure_assignment_submissions(assignment_id, classroom_id, lesson_lang, lesson_id)
 
+    post_lines = [f"{lesson_lang.upper()} Lesson {lesson_id} has been posted."]
+    if due_date:
+        post_lines.append(f"Due: {due_date}")
+    if comment:
+        post_lines.append(f"Note: {comment}")
+    create_stream_post(
+        classroom_id=classroom_id,
+        author_id=session["user_id"],
+        kind="assignment",
+        title="New assignment",
+        body="\n".join(post_lines),
+        audience="class",
+    )
+
     conn = get_db()
     students = conn.execute(
         "SELECT student_id FROM classroom_students WHERE classroom_id = ?",
@@ -1449,6 +1536,55 @@ def teacher_create_assignment(classroom_id):
             classroom_id=classroom_id,
         )
 
+    return redirect(url_for("teacher_classroom", classroom_id=classroom_id))
+
+
+@app.route("/teacher/classroom/<int:classroom_id>/announce", methods=["POST"])
+def teacher_post_announcement(classroom_id):
+    guard = require_login()
+    if guard:
+        return guard
+    if require_role("Teacher"):
+        return redirect(url_for("student_home"))
+
+    message = request.form.get("message", "").strip()
+    if not message:
+        flash("Please write an announcement.")
+        return redirect(url_for("teacher_classroom", classroom_id=classroom_id))
+
+    conn = get_db()
+    classroom = conn.execute(
+        "SELECT * FROM classrooms WHERE id = ? AND teacher_id = ?",
+        (classroom_id, session["user_id"]),
+    ).fetchone()
+    if not classroom:
+        conn.close()
+        return redirect(url_for("teacher_home"))
+
+    students = conn.execute(
+        "SELECT student_id FROM classroom_students WHERE classroom_id = ?",
+        (classroom_id,),
+    ).fetchall()
+    conn.close()
+
+    create_stream_post(
+        classroom_id=classroom_id,
+        author_id=session["user_id"],
+        kind="announcement",
+        title="Announcement",
+        body=message,
+        audience="class",
+    )
+
+    for s in students:
+        create_notification(
+            s["student_id"],
+            "New announcement",
+            f"{classroom['name']}: {message}",
+            classroom_id=classroom_id,
+        )
+
+    flash("Announcement posted.")
     return redirect(url_for("teacher_classroom", classroom_id=classroom_id))
 
 
@@ -1536,6 +1672,16 @@ def teacher_grade_submission(submission_id):
         "Assignment graded",
         f"{submission['lesson_lang'].upper()} Lesson {submission['lesson_id']} graded: {grade_val}/10.",
         classroom_id=submission["classroom_id"],
+    )
+
+    create_stream_post(
+        classroom_id=submission["classroom_id"],
+        author_id=session["user_id"],
+        kind="grade",
+        title="Grade posted",
+        body=f"{submission['lesson_lang'].upper()} Lesson {submission['lesson_id']}: {grade_val}/10",
+        audience="student",
+        student_id=submission["student_id"],
     )
 
     flash("Grade saved.")

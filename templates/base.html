@@ -6,34 +6,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<nav>
-    <div class="logo">CodeCourse <span>by Code For ME</span></div>
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="{{ '/' if not session.get('user_id') else ('/student/home' if session.get('role') == 'Student' else ('/teacher/home' if session.get('role') == 'Teacher' else '/admin')) }}">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <div>
+        <div class="brand-name">CodeCourse</div>
+        <div class="brand-sub">by Code For ME</div>
+      </div>
+    </a>
+
     {% if session.get('user_id') %}
-    <div class="nav-links">
+      <nav class="nav-links" aria-label="Primary">
         {% if session.get('role') == 'Student' %}
-            <a href="/student/home">Home</a>
-            <a href="/student/classroom">Classroom</a>
+          <a href="/student/home">Dashboard</a>
+          <a href="/student/classroom">Classroom</a>
+        {% elif session.get('role') == 'Teacher' %}
+          <a href="/teacher/home">Dashboard</a>
         {% else %}
-            <a href="/teacher/home">Home</a>
+          <a href="/admin">Admin</a>
         {% endif %}
-        {% if session.get('role') == 'Admin' %}
-            <a href="/admin">Admin</a>
-        {% endif %}
-        <a href="/reach-out">Reach Out</a>
+        <a href="/reach-out">Support</a>
         <a href="/logout">Log out</a>
-    </div>
-    <div class="nav-profile">
+      </nav>
+
+      <div class="profile">
         {% if session.get('avatar') %}
           <img src="{{ url_for('static', filename='avatars/' + session.get('avatar')) }}" alt="avatar">
         {% endif %}
         <span>{{ session.get('name') }}</span>
-    </div>
+      </div>
     {% endif %}
-</nav>
+  </div>
+</header>
 
 <main>
     {% with messages = get_flashed_messages() %}

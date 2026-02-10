@@ -1,12 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="card center">
-  <h1>Create a Classroom</h1>
-  <form method="post">
-    <input name="name" placeholder="Classroom name" required>
-    <button class="primary">Create</button>
-  </form>
+<div class="grid">
+  <div class="col-6">
+    <div class="card card-pad-lg">
+      <h1>Create a classroom</h1>
+      <p class="subtitle">Give your class a name. You’ll get a class code and invite link.</p>
+      <form method="post" class="form" style="margin-top: 12px;">
+        <label>Classroom name</label>
+        <input name="name" placeholder="e.g., Period 2 Computer Science" required>
+        <button class="btn btn-primary" type="submit">Create</button>
+      </form>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

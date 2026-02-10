@@ -1,51 +1,81 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="hero">
-  <div>
-    <h1>Welcome, {{ name }}</h1>
-    <p class="subtitle">Create classrooms, assign lessons, and track progress at a glance.</p>
-  </div>
-  <a href="/teacher/classroom/create"><button class="primary">Create Classroom</button></a>
-</section>
+<div class="grid">
+  <section class="col-8">
+    <div class="card hero card-pad-lg">
+      <h1>Teacher dashboard</h1>
+      <p class="subtitle">Create classrooms, post work, and grade out of 10 — all in one place.</p>
+      <div class="row" style="margin-top: 14px; flex-wrap: wrap;">
+        <a class="btn btn-primary" href="/teacher/classroom/create">Create classroom</a>
+      </div>
+    </div>
 
-{% if notifications %}
-<section class="card notify-card">
-  <h2>Notifications</h2>
-  <ul class="notify-list">
-    {% for n in notifications %}
-      <li>
-        <strong>{{ n.title }}</strong><br>
-        {{ n.body }}
-      </li>
-    {% endfor %}
-  </ul>
-  <form method="post" action="/notifications/read">
-    <button class="secondary">Mark all as read</button>
-  </form>
-</section>
-{% endif %}
+    <div class="card card-pad-lg">
+      <div class="row" style="justify-content: space-between; align-items: baseline;">
+        <h2>Your classes</h2>
+        <span class="muted" style="font-weight: 800;">Share the class code or invite link</span>
+      </div>
 
-<section class="card">
-  <h2>Teacher Toolkit</h2>
-  <ul class="feature-list">
-    <li>Assign lessons with due dates and notes</li>
-    <li>Track completion and quiz scores automatically</li>
-    <li>Invite students by email and share class codes</li>
-  </ul>
-</section>
+      {% if classrooms %}
+        <div class="course-grid" style="margin-top: 12px;">
+          {% for c in classrooms %}
+            <a class="course" href="/teacher/classroom/{{ c.id }}">
+              <div class="row" style="justify-content: space-between; align-items: baseline;">
+                <div>
+                  <h3 style="font-weight: 900;">{{ c.name }}</h3>
+                  <div class="muted">Code: <strong>{{ c.code }}</strong></div>
+                </div>
+                <div class="pill-tag todo">Open</div>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="subtitle" style="margin-top: 10px;">No classrooms yet. Create one to get started.</p>
+      {% endif %}
+    </div>
+  </section>
 
-{% if classrooms %}
-  <div class="grid">
-    {% for c in classrooms %}
-      <a class="tile" href="/teacher/classroom/{{ c.id }}">
-        <h3>{{ c.name }}</h3>
-        <p class="muted">Code: {{ c.code }}</p>
-      </a>
-    {% endfor %}
-  </div>
-{% else %}
-  <p class="muted">No classrooms yet. Create one to get started.</p>
-{% endif %}
+  <aside class="col-4">
+    {% if notifications %}
+      <div class="card card-pad-lg">
+        <div class="row" style="justify-content: space-between;">
+          <h2>Notifications</h2>
+          <form method="post" action="/notifications/read">
+            <button class="btn btn-ghost" type="submit">Mark read</button>
+          </form>
+        </div>
+        <div class="stack" style="margin-top: 10px;">
+          {% for n in notifications %}
+            <div class="stream-item">
+              <div class="stream-title">{{ n.title }}</div>
+              <div class="stream-body">{{ n.body }}</div>
+              <div class="muted" style="margin-top: 6px; font-weight: 700;">{{ n.created_at }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="card card-pad-lg">
+      <h2>Teacher toolkit</h2>
+      <div class="stack" style="margin-top: 10px;">
+        <div class="stream-item">
+          <div class="stream-title">Post assignments</div>
+          <div class="stream-body">Assign any lesson with a due date and a note for students.</div>
+        </div>
+        <div class="stream-item">
+          <div class="stream-title">Grade out of 10</div>
+          <div class="stream-body">Save grades and students see updates immediately.</div>
+        </div>
+        <div class="stream-item">
+          <div class="stream-title">Invite links</div>
+          <div class="stream-body">Students can join using a simple URL or class code.</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
 
 {% endblock %}

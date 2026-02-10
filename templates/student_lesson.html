@@ -2,83 +2,88 @@
 {% block content %}
 
 <div class="lesson-shell">
-  <div class="lesson-header">
-    <div>
-      <h1>{{ lesson.title }}</h1>
-      <p class="subtitle">Complete reading, watch the video, then ace the quiz.</p>
+  <div class="card card-pad-lg">
+    <div class="lesson-header">
+      <div>
+        <h1>{{ lesson.title }}</h1>
+        <p class="subtitle">Read, watch, then take the quiz to complete this lesson.</p>
+      </div>
+      <div class="lesson-xp">XP {{ lesson.xp }}</div>
     </div>
-    <div class="lesson-xp">XP {{ lesson.xp }}</div>
   </div>
 
   {% if quiz_result and quiz_result.all_correct %}
-    <div class="card lesson-complete">
-      <h2 class="success">Correct! Lesson complete.</h2>
-      <p>Great work — you unlocked the next bubble.</p>
+    <div class="card card-pad-lg" style="text-align:center;">
+      <h2 class="success">Lesson complete</h2>
+      <p class="subtitle">Nice work — you unlocked the next lesson.</p>
       {% if quiz_result.assignment_completed %}
-        <div class="pill completed">Assignment turned in</div>
+        <div class="pill-tag good" style="display:inline-flex; margin-top: 10px;">Assignment turned in</div>
       {% endif %}
-      <a href="/student/language/{{ lang.id }}"><button class="primary">Continue</button></a>
+      <div style="margin-top: 14px;">
+        <a class="btn btn-primary" href="/student/language/{{ lang.id }}">Continue</a>
+      </div>
       <canvas id="confetti"></canvas>
     </div>
   {% else %}
     <div class="lesson-steps">
       <div class="step" data-step="0">
-        <div class="card">
-          <h2>Let’s start!</h2>
-          <p>Move through the steps below to complete this lesson.</p>
-          <button class="primary" data-next>Start Lesson</button>
+        <div class="lesson-card">
+          <h2>Start</h2>
+          <p class="subtitle">Work through each section to finish the lesson.</p>
+          <button class="btn btn-primary" type="button" data-next>Begin</button>
         </div>
       </div>
 
       <div class="step" data-step="1">
         <div class="lesson-card">
-          <div class="step-header">
+          <div class="row" style="justify-content: space-between; align-items: baseline;">
             <h2>Reading</h2>
-            <span class="step-pill">Step 1 of 3</span>
+            <span class="pill-tag">Step 1 of 3</span>
           </div>
-          <p class="reading-text" id="reading-text">{{ lesson.reading }}</p>
-          <button class="ghost" id="highlight-btn">Highlight selection</button>
+          <p class="reading-text" id="reading-text" style="margin-top: 10px;">{{ lesson.reading }}</p>
+          <button class="btn btn-ghost" type="button" id="highlight-btn">Highlight selection</button>
 
-          <form method="post" action="/student/lesson/{{ lang.id }}/{{ lesson.id }}/notes">
-            <label class="label">Notes</label>
+          <form method="post" action="/student/lesson/{{ lang.id }}/{{ lesson.id }}/notes" class="form" style="margin-top: 12px;">
+            <label>Notes</label>
             <textarea name="notes" rows="6" placeholder="Write your notes here...">{{ notes }}</textarea>
-            <button class="secondary">Save Notes</button>
+            <button class="btn btn-secondary" type="submit">Save notes</button>
           </form>
 
-          <button class="primary" data-next>Next: Video</button>
+          <button class="btn btn-primary" type="button" data-next style="margin-top: 12px;">Next: Video</button>
         </div>
       </div>
 
       <div class="step" data-step="2">
         <div class="lesson-card">
-          <div class="step-header">
+          <div class="row" style="justify-content: space-between; align-items: baseline;">
             <h2>Video</h2>
-            <span class="step-pill">Step 2 of 3</span>
+            <span class="pill-tag">Step 2 of 3</span>
           </div>
           {% if lesson.video_url %}
-            <div class="video-frame">
+            <div class="video-frame" style="margin-top: 12px;">
               <iframe src="{{ lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
             </div>
           {% else %}
-            <div class="video-placeholder">
-              Add a video URL for this lesson anytime. Example: YouTube embed link.
+            <div class="video-placeholder" style="margin-top: 12px;">
+              No video yet for this lesson. (You can add a video URL in the admin panel.)
             </div>
           {% endif %}
-          <button class="primary" data-next>Next: Quiz</button>
+          <button class="btn btn-primary" type="button" data-next style="margin-top: 12px;">Next: Quiz</button>
         </div>
       </div>
 
       <div class="step" data-step="3">
         <div class="lesson-card">
-          <div class="step-header">
+          <div class="row" style="justify-content: space-between; align-items: baseline;">
             <h2>Quiz</h2>
-            <span class="step-pill">Step 3 of 3</span>
+            <span class="pill-tag">Step 3 of 3</span>
           </div>
-          <form method="post" action="/student/lesson/{{ lang.id }}/{{ lesson.id }}/quiz">
+
+          <form method="post" action="/student/lesson/{{ lang.id }}/{{ lesson.id }}/quiz" class="stack" style="margin-top: 12px;">
             {% for q in lesson.quiz %}
               {% set q_index = loop.index0 %}
               <div class="quiz-block">
-                <p class="quiz-question">{{ loop.index }}. {{ q.question }}</p>
+                <div class="quiz-question">{{ loop.index }}. {{ q.question }}</div>
                 {% for choice in q.choices %}
                   <label class="choice">
                     <input type="radio" name="q{{ q_index }}" value="{{ choice }}" required>
@@ -87,7 +92,7 @@
                 {% endfor %}
               </div>
             {% endfor %}
-            <button class="primary">Submit Quiz</button>
+            <button class="btn btn-primary" type="submit">Submit quiz</button>
           </form>
         </div>
       </div>
@@ -95,19 +100,18 @@
   {% endif %}
 
   {% if quiz_result and not quiz_result.all_correct %}
-    <div class="card quiz-feedback">
-      <h3>Quiz Results: {{ quiz_result.score }}%</h3>
-      <p>You need {{ quiz_result.passing_score }}% to pass. Review and try again.</p>
-      <ul class="quiz-results">
+    <div class="card card-pad-lg">
+      <h2>Quiz results</h2>
+      <p class="subtitle">Score: <strong>{{ quiz_result.score }}%</strong>. You need {{ quiz_result.passing_score }}% to pass.</p>
+      <div class="stack" style="margin-top: 10px;">
         {% for r in quiz_result.results %}
-          <li class="{{ 'correct' if r.correct else 'incorrect' }}">
-            <strong>{{ r.question }}</strong><br>
-            Your answer: {{ r.your_answer or 'No answer' }}<br>
-            Correct: {{ r.correct_answer }}
-          </li>
+          <div class="stream-item" style="border-color: {{ 'rgba(15,157,88,0.25)' if r.correct else 'rgba(239,68,68,0.25)' }};">
+            <div class="stream-title">{{ r.question }}</div>
+            <div class="stream-body">Your answer: {{ r.your_answer or 'No answer' }}<br>Correct: {{ r.correct_answer }}</div>
+          </div>
         {% endfor %}
-      </ul>
-      <a href="/student/lesson/{{ lang.id }}/{{ lesson.id }}"><button class="secondary">Retry Quiz</button></a>
+      </div>
+      <a class="btn btn-secondary" href="/student/lesson/{{ lang.id }}/{{ lesson.id }}" style="margin-top: 12px;">Try again</a>
     </div>
   {% endif %}
 </div>
@@ -148,11 +152,7 @@ if (highlightBtn && readingText) {
     const range = selection.getRangeAt(0);
     if (!readingText.contains(range.commonAncestorContainer)) return;
     const mark = document.createElement('mark');
-    try {
-      range.surroundContents(mark);
-    } catch (err) {
-      return;
-    }
+    try { range.surroundContents(mark); } catch (err) { return; }
     selection.removeAllRanges();
   });
 }

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="hero">
+<section class="card hero card-pad-lg">
   <div>
     <h1>Admin Dashboard</h1>
     <p class="subtitle">Add lessons, manage languages, and keep your content organized.</p>
@@ -9,9 +9,9 @@
 </section>
 
 <div class="admin-layout">
-  <div class="card">
+  <div class="card card-pad-lg">
     <h2>Add Lesson</h2>
-    <form method="post" action="/admin/lesson/create" class="assignment-form">
+    <form method="post" action="/admin/lesson/create" class="form" style="margin-top: 10px;">
       <select name="lang_id" required>
         <option disabled selected>Select language</option>
         {% for lang in languages %}
@@ -23,13 +23,13 @@
       <textarea name="reading" rows="6" placeholder="Reading content" required></textarea>
       <input name="video_url" placeholder="Video embed URL (optional)">
       <textarea name="quiz_text" rows="8" placeholder="Quiz format: Question | A,B,C,D | Answer\nExample:\nWhat is Python? | A language, A game, A food, A car | A language" required></textarea>
-      <button class="primary">Add Lesson</button>
+      <button class="btn btn-primary" type="submit">Add Lesson</button>
     </form>
   </div>
 
-  <div class="card">
+  <div class="card card-pad-lg">
     <h2>Add Language</h2>
-    <form method="post" action="/admin/language/create" class="assignment-form">
+    <form method="post" action="/admin/language/create" class="form" style="margin-top: 10px;">
       <input name="lang_id" placeholder="Language id (e.g., rust)" required>
       <input name="name" placeholder="Language name" required>
       <input name="description" placeholder="Short description">
@@ -37,14 +37,14 @@
         <input type="checkbox" name="enabled">
         Enable immediately
       </label>
-      <button class="secondary">Add Language</button>
+      <button class="btn btn-secondary" type="submit">Add Language</button>
     </form>
   </div>
 </div>
 
-<div class="card">
+<div class="card card-pad-lg">
   <h2>Toggle Languages</h2>
-  <form method="post" action="/admin/language/toggle" class="assignment-form">
+  <form method="post" action="/admin/language/toggle" class="form" style="margin-top: 10px;">
     <select name="lang_id" required>
       <option disabled selected>Select language</option>
       {% for lang in languages %}
@@ -55,13 +55,13 @@
       <input type="checkbox" name="enabled">
       Enable this language
     </label>
-    <button class="secondary">Update Language</button>
+    <button class="btn btn-secondary" type="submit">Update Language</button>
   </form>
 </div>
 
-<div class="card">
+<div class="card card-pad-lg">
   <h2>Current Tracks</h2>
-  <div class="assignment-list">
+  <div class="stack" style="margin-top: 10px;">
     {% for lang in languages %}
       <div class="assignment-row">
         <div>
@@ -69,8 +69,8 @@
           <p class="muted">ID: {{ lang.id }}</p>
         </div>
         <div class="assignment-actions">
-          <span class="pill {{ 'active' if lang.enabled else 'locked' }}">{{ 'Enabled' if lang.enabled else 'Disabled' }}</span>
-          <span class="pill">Lessons: {{ lang.lessons|length }}</span>
+          <span class="pill-tag {{ 'good' if lang.enabled else '' }}">{{ 'Enabled' if lang.enabled else 'Disabled' }}</span>
+          <span class="pill-tag">Lessons: {{ lang.lessons|length }}</span>
         </div>
       </div>
       {% if lang.lessons %}
@@ -80,7 +80,7 @@
               <div>
                 <strong>Lesson {{ lesson.id }}:</strong> {{ lesson.title }}
               </div>
-              <a href="/admin/lesson/{{ lang.id }}/{{ lesson.id }}" class="external-link">Edit</a>
+              <a href="/admin/lesson/{{ lang.id }}/{{ lesson.id }}" class="btn btn-secondary">Edit</a>
             </div>
           {% endfor %}
         </div>

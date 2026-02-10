@@ -1,82 +1,151 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="classroom-hero">
-  <div>
-    <h1>{{ classroom.name }}</h1>
-    <p class="subtitle">Class code: <strong>{{ classroom.code }}</strong></p>
-    <div class="class-link">
-      <span>Invite link:</span>
-      <input readonly value="{{ request.host_url }}join/{{ classroom.code }}">
-      <button class="ghost" onclick="navigator.clipboard.writeText('{{ request.host_url }}join/{{ classroom.code }}')">Copy</button>
-    </div>
-  </div>
-  <div class="classroom-stats">
-    <div class="stat-card">
-      <div class="stat-label">Students</div>
-      <div class="stat-value">{{ students|length }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Assignments</div>
-      <div class="stat-value">{{ assignments|length }}</div>
-    </div>
-    <form method="post" action="/teacher/classroom/{{ classroom.id }}/delete" onsubmit="return confirm('Delete this classroom? This cannot be undone.');">
-      <button class="secondary">Delete Class</button>
-    </form>
-  </div>
-</section>
-
-{% if stream_items %}
-<div class="card stream-card">
-  <h2>Classroom Stream</h2>
-  <div class="stream-list">
-    {% for item in stream_items %}
-      <div class="stream-item">
-        <div class="stream-title">{{ item.title }}</div>
-        <div class="stream-body">{{ item.body }}</div>
-        <div class="muted">{{ item.created_at }}</div>
+<div class="card class-header">
+  <div class="class-banner" aria-hidden="true"></div>
+  <div class="class-header-inner">
+    <div class="row" style="justify-content: space-between; align-items: start; flex-wrap: wrap;">
+      <div>
+        <h1 style="color: var(--text);">{{ classroom.name }}</h1>
+        <p class="subtitle">Class code: <strong>{{ classroom.code }}</strong></p>
       </div>
-    {% endfor %}
+      <div class="row" style="gap: 10px; flex-wrap: wrap;">
+        <form method="post" action="/teacher/classroom/{{ classroom.id }}/delete" onsubmit="return confirm('Delete this classroom? This cannot be undone.');">
+          <button class="btn btn-danger" type="submit">Delete class</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="class-meta">
+      <span class="pill-tag">Students: {{ students|length }}</span>
+      <span class="pill-tag">Assignments: {{ assignments|length }}</span>
+    </div>
+
+    <div class="class-link">
+      <input readonly value="{{ request.host_url }}join/{{ classroom.code }}" aria-label="Invite link">
+      <button class="btn btn-secondary" type="button" onclick="navigator.clipboard.writeText('{{ request.host_url }}join/{{ classroom.code }}')">Copy invite link</button>
+    </div>
+
+    <div class="tabs-row" role="tablist" aria-label="Classroom sections">
+      <button class="tab-btn active" type="button" data-tab="stream">Stream</button>
+      <button class="tab-btn" type="button" data-tab="classwork">Classwork</button>
+      <button class="tab-btn" type="button" data-tab="people">People</button>
+      <button class="tab-btn" type="button" data-tab="grades">Grades</button>
+    </div>
   </div>
 </div>
-{% endif %}
 
-<div class="teacher-layout">
-  <div class="card">
-    <h2>Create an assignment</h2>
-    <form method="post" action="/teacher/classroom/{{ classroom.id }}/assignments/create" class="assignment-form">
-      <div class="inline-grid">
-        <select name="lesson_key" required>
-          <option disabled selected>Lesson</option>
-          {% for lang in languages %}
-            {% if lang.enabled %}
-              {% for lesson in lang.lessons %}
-                <option value="{{ lang.id }}:{{ lesson.id }}">{{ lang.name }}: {{ lesson.title }}</option>
-              {% endfor %}
-            {% endif %}
-          {% endfor %}
-        </select>
-      </div>
-      <div class="inline-grid">
-        <input type="date" name="due_date">
-        <input name="comment" placeholder="Add a note for students (optional)">
-      </div>
-      <button class="primary">Post Assignment</button>
+<div id="tab-stream" class="stack">
+  <div class="card card-pad-lg">
+    <h2>Post an announcement</h2>
+    <form method="post" action="/teacher/classroom/{{ classroom.id }}/announce" class="form" style="margin-top: 10px;">
+      <textarea name="message" rows="3" placeholder="Share an update with your class..." required></textarea>
+      <button class="btn btn-primary" type="submit">Post</button>
     </form>
   </div>
 
-  <div class="card">
-    <h2>Invite Students by Email</h2>
-    <form method="post" action="/teacher/classroom/{{ classroom.id }}/invite" class="assignment-form">
+  {% if stream_items %}
+    {% for item in stream_items %}
+      <div class="stream-item">
+        <div class="row" style="justify-content: space-between; align-items: baseline;">
+          <div class="stream-title">{{ item.title }}</div>
+          <div class="pill-tag">{{ item.kind }}</div>
+        </div>
+        <div class="stream-body" style="white-space: pre-line;">{{ item.body }}</div>
+        <div class="muted" style="margin-top: 8px; font-weight: 800;">{{ item.author_name }} • {{ item.created_at }}</div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="card card-pad-lg">
+      <h2>No posts yet</h2>
+      <p class="subtitle">Announcements and assignments will show up here.</p>
+    </div>
+  {% endif %}
+
+  <div class="card card-pad-lg">
+    <h2>Student comments</h2>
+    {% if comments %}
+      <div class="stack" style="margin-top: 10px;">
+        {% for c in comments %}
+          <div class="stream-item">
+            <div class="row" style="justify-content: space-between; align-items: baseline;">
+              <div class="stream-title">{{ c.name }} (@{{ c.username }})</div>
+              <div class="pill-tag">{{ c.lesson_lang|upper }} {{ c.lesson_id }}</div>
+            </div>
+            <div class="stream-body">{{ c.student_comment }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="subtitle" style="margin-top: 8px;">No comments yet.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div id="tab-classwork" class="stack" style="display:none;">
+  <div class="card card-pad-lg">
+    <h2>Create an assignment</h2>
+    <form method="post" action="/teacher/classroom/{{ classroom.id }}/assignments/create" class="form" style="margin-top: 10px;">
+      <label>Lesson</label>
+      <select name="lesson_key" required>
+        <option disabled selected>Select a lesson</option>
+        {% for lang in languages %}
+          {% if lang.enabled %}
+            {% for lesson in lang.lessons %}
+              <option value="{{ lang.id }}:{{ lesson.id }}">{{ lang.name }} • {{ lesson.title }}</option>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </select>
+      <div class="form-row">
+        <div class="span-6">
+          <label>Due date (optional)</label>
+          <input type="date" name="due_date">
+        </div>
+        <div class="span-6">
+          <label>Note (optional)</label>
+          <input name="comment" placeholder="Add a note for students">
+        </div>
+      </div>
+      <button class="btn btn-primary" type="submit">Post assignment</button>
+    </form>
+  </div>
+
+  <div class="card card-pad-lg">
+    <h2>Assignments</h2>
+    {% if assignments %}
+      <div class="stack" style="margin-top: 10px;">
+        {% for a in assignments %}
+          <div class="assignment-row">
+            <div>
+              <div style="font-weight: 900;">{{ a.lesson_lang|upper }} Lesson {{ a.lesson_id }}</div>
+              {% if a.comment %}<div class="muted" style="margin-top: 4px;">Note: {{ a.comment }}</div>{% endif %}
+              {% if a.due_date %}<div class="muted" style="margin-top: 4px;">Due: {{ a.due_date }}</div>{% endif %}
+            </div>
+            <div class="assignment-actions">
+              <span class="pill-tag">{{ a.completed_count or 0 }}/{{ a.total_subs or 0 }} completed</span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="subtitle" style="margin-top: 8px;">No assignments posted yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="card card-pad-lg">
+    <h2>Invite students</h2>
+    <p class="subtitle">Use the invite link above, or keep a list of invited emails.</p>
+    <form method="post" action="/teacher/classroom/{{ classroom.id }}/invite" class="form" style="margin-top: 10px;">
       <input type="email" name="email" placeholder="Student email" required>
-      <button class="secondary">Save Invite</button>
+      <button class="btn btn-secondary" type="submit">Save invite</button>
     </form>
     {% if invites %}
-      <div class="student-list" style="margin-top: 1rem;">
+      <div class="stack" style="margin-top: 10px;">
         {% for invite in invites %}
-          <div class="student-row">
-            <div>{{ invite.email }}</div>
-            <div class="muted">{{ invite.invited_at }}</div>
+          <div class="stream-item">
+            <div class="stream-title">{{ invite.email }}</div>
+            <div class="muted" style="margin-top: 6px; font-weight: 700;">Invited: {{ invite.invited_at }}</div>
           </div>
         {% endfor %}
       </div>
@@ -84,89 +153,74 @@
   </div>
 </div>
 
-<div class="card">
-  <h2>Assignments Feed</h2>
-  {% if assignments %}
-    <div class="assignment-list">
-      {% for a in assignments %}
-        <div class="assignment-row">
-          <div>
-            <h3>{{ a.lesson_lang|upper }} Lesson {{ a.lesson_id }}</h3>
-            {% if a.comment %}<p class="muted">Note: {{ a.comment }}</p>{% endif %}
-            {% if a.due_date %}<p class="muted">Due: {{ a.due_date }}</p>{% endif %}
+<div id="tab-people" class="stack" style="display:none;">
+  <div class="card card-pad-lg">
+    <h2>Students</h2>
+    {% if students %}
+      <div class="stack" style="margin-top: 10px;">
+        {% for s in students %}
+          <div class="assignment-row">
+            <div>
+              <div style="font-weight: 900;">{{ s.name }}</div>
+              <div class="muted">@{{ s.username }}</div>
+            </div>
           </div>
-          <div class="assignment-actions">
-            <span class="pill">{{ a.completed_count or 0 }}/{{ a.total_subs or 0 }} completed</span>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <p class="muted">No assignments posted yet.</p>
-  {% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="subtitle" style="margin-top: 8px;">No students have joined yet.</p>
+    {% endif %}
+  </div>
 </div>
 
-<div class="card">
-  <h2>Students</h2>
-  {% if students %}
-    <div class="student-list">
-      {% for s in students %}
-        <div class="student-row">
-          <div>{{ s.name }}</div>
-          <div class="muted">@{{ s.username }}</div>
-        </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <p class="muted">No students have joined yet.</p>
-  {% endif %}
+<div id="tab-grades" class="stack" style="display:none;">
+  <div class="card card-pad-lg">
+    <h2>Grades</h2>
+    <p class="subtitle">Enter grades out of 10. Students will see updates immediately.</p>
+
+    {% if submissions %}
+      <div class="stack" style="margin-top: 10px;">
+        {% for s in submissions %}
+          <div class="assignment-row">
+            <div>
+              <div style="font-weight: 900;">{{ s.name }} (@{{ s.username }})</div>
+              <div class="muted">{{ s.lesson_lang|upper }} Lesson {{ s.lesson_id }} • Status: {{ s.status }}</div>
+              {% if s.score is not none %}<div class="muted" style="margin-top: 4px;">Quiz score: {{ s.score }}%</div>{% endif %}
+            </div>
+            <div class="assignment-actions">
+              <form method="post" action="/teacher/submission/{{ s.submission_id }}/grade" class="row" style="gap: 10px;">
+                <input name="grade" type="number" min="0" max="10" placeholder="/10" value="{{ s.grade_out_of_10 or '' }}" style="width: 90px;">
+                <button class="btn btn-secondary" type="submit">Save</button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="subtitle" style="margin-top: 8px;">No submissions yet.</p>
+    {% endif %}
+  </div>
 </div>
 
-<div class="card">
-  <h2>Grades</h2>
-  {% if submissions %}
-    <div class="assignment-list">
-      {% for s in submissions %}
-        <div class="assignment-row">
-          <div>
-            <h3>{{ s.name }} (@{{ s.username }})</h3>
-            <p class="muted">{{ s.lesson_lang|upper }} Lesson {{ s.lesson_id }}</p>
-            <p class="muted">Status: {{ s.status }}</p>
-            {% if s.score is not none %}
-              <p class="muted">Quiz Score: {{ s.score }}%</p>
-            {% endif %}
-          </div>
-          <div class="assignment-actions">
-            <form method="post" action="/teacher/submission/{{ s.submission_id }}/grade" class="grade-form">
-              <input name="grade" type="number" min="0" max="10" placeholder="Grade /10" value="{{ s.grade_out_of_10 or '' }}">
-              <button class="secondary">Save</button>
-            </form>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <p class="muted">No submissions yet.</p>
-  {% endif %}
-</div>
+<script>
+const tabButtons = document.querySelectorAll('[data-tab]');
+const sections = {
+  stream: document.getElementById('tab-stream'),
+  classwork: document.getElementById('tab-classwork'),
+  people: document.getElementById('tab-people'),
+  grades: document.getElementById('tab-grades'),
+};
 
-<div class="card">
-  <h2>Student Comments</h2>
-  {% if comments %}
-    <div class="assignment-list">
-      {% for c in comments %}
-        <div class="assignment-row">
-          <div>
-            <h3>{{ c.name }} (@{{ c.username }})</h3>
-            <p class="muted">{{ c.lesson_lang|upper }} Lesson {{ c.lesson_id }}</p>
-            <p>{{ c.student_comment }}</p>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <p class="muted">No comments yet.</p>
-  {% endif %}
-</div>
+tabButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    tabButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const which = btn.dataset.tab;
+    Object.entries(sections).forEach(([k, el]) => {
+      el.style.display = (k === which) ? 'grid' : 'none';
+    });
+  });
+});
+</script>
 
 {% endblock %}

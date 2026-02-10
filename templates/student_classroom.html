@@ -1,98 +1,120 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="classroom-hero">
-  <div>
-    <h1>Classroom Stream</h1>
-    <p class="subtitle">Assignments feed with quick access to join new classes.</p>
-  </div>
-</section>
-
-<div class="classroom-layout">
-  <div class="stream">
-    {% if stream_items %}
-      <div class="card stream-card">
-        <h2>Classroom Stream</h2>
-        <div class="stream-list">
-          {% for item in stream_items %}
-            <div class="stream-item">
-              <div class="stream-title">{{ item.title }}</div>
-              <div class="stream-body">{{ item.body }}</div>
-              <div class="muted">{{ item.created_at }}</div>
-            </div>
-          {% endfor %}
-        </div>
-      </div>
-    {% endif %}
-
-    <div class="card assignment-card">
-      <h2>Assignments</h2>
-      {% if assignments %}
-        <div class="assignment-list">
-          {% for a in assignments %}
-            <div class="assignment-row">
-              <div>
-                <h3>{{ a.lesson_lang|upper }} Lesson {{ a.lesson_id }}</h3>
-                <p class="muted">{{ a.classroom_name }}</p>
-                {% if a.comment %}
-                  <p class="muted">Teacher note: {{ a.comment }}</p>
-                {% endif %}
-                {% if a.due_date %}
-                  <p class="muted">Due: {{ a.due_date }}</p>
-                {% endif %}
-                <form method="post" action="/student/assignment/{{ a.id }}/comment" class="comment-form">
-                  <input name="comment" placeholder="Comment to your teacher">
-                  <button class="ghost">Send</button>
-                </form>
-              </div>
-              <div class="assignment-actions">
-            {% if a.status == 'completed' %}
-              <span class="pill completed">Completed</span>
-            {% else %}
-              <span class="pill active">Needs work</span>
-            {% endif %}
-            {% if a.grade_out_of_10 is not none %}
-              <span class="pill grade">Grade: {{ a.grade_out_of_10 }}/10</span>
-            {% endif %}
-            <a href="/student/lesson/{{ a.lesson_lang }}/{{ a.lesson_id }}"><button class="secondary">Open Lesson</button></a>
-          </div>
-        </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p class="muted">No assignments yet. Ask your teacher to post one.</p>
-      {% endif %}
+<div class="card card-pad-lg" style="margin-bottom: 16px;">
+  <div class="row" style="justify-content: space-between; align-items: baseline; flex-wrap: wrap;">
+    <div>
+      <h1>Classroom</h1>
+      <p class="subtitle">Stream updates and open assignments from your classes.</p>
+    </div>
+    <div class="tabs-row" role="tablist" aria-label="Classroom sections">
+      <button class="tab-btn active" type="button" data-tab="stream">Stream</button>
+      <button class="tab-btn" type="button" data-tab="classwork">Classwork</button>
     </div>
   </div>
+</div>
 
-  <aside class="class-sidebar">
-    <div class="card join-card">
-      <h2>Join a classroom</h2>
-      <form method="post">
-        <input name="code" placeholder="Enter classroom code" required>
-        <button class="primary">Join</button>
+<div class="grid">
+  <section class="col-8">
+    <div id="tab-stream" class="stack">
+      {% if stream_items %}
+        {% for item in stream_items %}
+          <div class="stream-item">
+            <div class="stream-title">{{ item.title }}</div>
+            <div class="stream-body">{{ item.body }}</div>
+            <div class="muted" style="margin-top: 6px; font-weight: 700;">{{ item.created_at }}</div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="card card-pad-lg">
+          <h2>No stream posts yet</h2>
+          <p class="subtitle">When your teacher posts assignments or grades, they’ll appear here.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <div id="tab-classwork" class="stack" style="display: none;">
+      <div class="card card-pad-lg">
+        <h2>Assignments</h2>
+        {% if assignments %}
+          <div class="stack" style="margin-top: 10px;">
+            {% for a in assignments %}
+              <div class="assignment-row">
+                <div>
+                  <div style="font-weight: 900;">{{ a.lesson_lang|upper }} Lesson {{ a.lesson_id }}</div>
+                  <div class="muted">{{ a.classroom_name }}</div>
+                  {% if a.comment %}<div class="muted" style="margin-top: 4px;">Teacher note: {{ a.comment }}</div>{% endif %}
+                  {% if a.due_date %}<div class="muted" style="margin-top: 4px;">Due: {{ a.due_date }}</div>{% endif %}
+
+                  <form method="post" action="/student/assignment/{{ a.id }}/comment" class="form" style="margin-top: 10px; gap: 10px;">
+                    <input name="comment" placeholder="Comment to your teacher">
+                    <button class="btn btn-ghost" type="submit">Send</button>
+                  </form>
+                </div>
+
+                <div class="assignment-actions">
+                  {% if a.status == 'completed' %}
+                    <span class="pill-tag good">Completed</span>
+                  {% else %}
+                    <span class="pill-tag todo">To do</span>
+                  {% endif %}
+                  {% if a.grade_out_of_10 is not none %}
+                    <span class="pill-tag grade">{{ a.grade_out_of_10 }}/10</span>
+                  {% endif %}
+                  <a class="btn btn-secondary" href="/student/lesson/{{ a.lesson_lang }}/{{ a.lesson_id }}">Open</a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="subtitle" style="margin-top: 8px;">No assignments yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <aside class="col-4">
+    <div class="card card-pad-lg">
+      <h2>Join a class</h2>
+      <p class="subtitle">Enter a classroom code from your teacher.</p>
+      <form method="post" class="form" style="margin-top: 10px;">
+        <input name="code" placeholder="Class code" required>
+        <button class="btn btn-primary" type="submit">Join</button>
       </form>
     </div>
 
-    {% if classrooms %}
-      <div class="card">
-        <h2>Your Classes</h2>
-        <div class="class-list">
+    <div class="card card-pad-lg" style="margin-top: 16px;">
+      <h2>Your classes</h2>
+      {% if classrooms %}
+        <div class="stack" style="margin-top: 10px;">
           {% for c in classrooms %}
-            <div class="class-chip">
-              <div>{{ c.name }}</div>
-              <div class="muted">Code: {{ c.code }}</div>
+            <div class="stream-item">
+              <div class="stream-title">{{ c.name }}</div>
+              <div class="stream-body">Code: <strong>{{ c.code }}</strong></div>
             </div>
           {% endfor %}
         </div>
-      </div>
-    {% else %}
-      <div class="card">
-        <h2>Your Classes</h2>
-        <p class="muted">You haven't joined a classroom yet.</p>
-      </div>
-    {% endif %}
+      {% else %}
+        <p class="subtitle" style="margin-top: 8px;">You haven't joined a class yet.</p>
+      {% endif %}
+    </div>
   </aside>
 </div>
+
+<script>
+const tabButtons = document.querySelectorAll('[data-tab]');
+const stream = document.getElementById('tab-stream');
+const classwork = document.getElementById('tab-classwork');
+
+tabButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    tabButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const which = btn.dataset.tab;
+    stream.style.display = which === 'stream' ? 'grid' : 'none';
+    classwork.style.display = which === 'classwork' ? 'grid' : 'none';
+  });
+});
+</script>
 
 {% endblock %}

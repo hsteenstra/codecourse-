@@ -1,90 +1,104 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="hero">
-  <div>
-    <h1>Welcome, {{ name }}</h1>
-  <p class="subtitle">Your learning path starts here. Pick a language, keep your streak, and build real coding confidence.</p>
-  </div>
-  <div class="hero-stats">
-    <div class="stat-card">
-      <div class="stat-label">Total XP</div>
-      <div class="stat-value">{{ total_xp }}</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Streak</div>
-      <div class="stat-value">{{ streak }} days</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Badges</div>
-      <div class="stat-value">{{ badges|length }}</div>
-    </div>
-  </div>
-</section>
+<div class="grid">
+  <section class="col-8">
+    <div class="card hero card-pad-lg">
+      <h1>Welcome back, {{ name }}.</h1>
+      <p class="subtitle">Pick a track, continue where you left off, and keep building your skills.</p>
 
-{% if notifications %}
-<section class="card notify-card">
-  <h2>Notifications</h2>
-  <ul class="notify-list">
-    {% for n in notifications %}
-      <li>
-        <strong>{{ n.title }}</strong><br>
-        {{ n.body }}
-      </li>
-    {% endfor %}
-  </ul>
-  <form method="post" action="/notifications/read">
-    <button class="secondary">Mark all as read</button>
-  </form>
-</section>
-{% endif %}
-
-<section class="card">
-  <h2>Your Badges</h2>
-  {% if badges %}
-    <div class="badge-row">
-      {% for badge in badges %}
-        <div class="badge">{{ badge }}</div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <p class="muted">Complete your first lesson to unlock badges.</p>
-  {% endif %}
-</section>
-
-<section class="card">
-  <h2>About Code For ME</h2>
-  <p>Code For ME empowers students with a clear, motivating path into programming. CodeCourse blends bite‑sized reading, videos, and quizzes with classroom tools for teachers. Learn at your pace, track your growth, and celebrate every milestone.</p>
-  <a href="https://codeforme.org" class="external-link" target="_blank" rel="noopener">Visit codeforme.org</a>
-</section>
-
-<section>
-  <h2>Pick a language</h2>
-  <div class="grid">
-    {% for lang in languages %}
-      {% if lang.enabled %}
-        <a href="/student/language/{{ lang.id }}" class="tile">
-          <h3>{{ lang.name }}</h3>
-          <p>{{ lang.description }}</p>
-          <div class="progress">
-            <div class="progress-bar" style="width: {{ lang.percent }}%"></div>
-          </div>
-          <div class="progress-label {{ 'complete' if lang.complete else '' }}">
-            {{ lang.percent }}% complete
-          </div>
-        </a>
-      {% else %}
-        <div class="tile locked">
-          <h3>{{ lang.name }}</h3>
-          <p>{{ lang.description }}</p>
-          <div class="progress">
-            <div class="progress-bar" style="width: 0%"></div>
-          </div>
-          <div class="progress-label">Coming soon</div>
+      <div class="stats" style="margin-top: 14px;">
+        <div class="stat">
+          <div class="label">Total XP</div>
+          <div class="value">{{ total_xp }}</div>
         </div>
+        <div class="stat">
+          <div class="label">Streak</div>
+          <div class="value">{{ streak }} days</div>
+        </div>
+        <div class="stat">
+          <div class="label">Badges</div>
+          <div class="value">{{ badges|length }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-pad-lg">
+      <div class="row" style="justify-content: space-between; align-items: baseline;">
+        <h2>Your tracks</h2>
+        <span class="muted" style="font-weight: 800;">Progress is saved automatically</span>
+      </div>
+
+      <div class="course-grid" style="margin-top: 12px;">
+        {% for lang in languages %}
+          {% if lang.enabled %}
+            <a class="course" href="/student/language/{{ lang.id }}">
+              <div class="row" style="justify-content: space-between; align-items: baseline;">
+                <div>
+                  <h3 style="font-weight: 900;">{{ lang.name }}</h3>
+                  <div class="muted">{{ lang.description }}</div>
+                </div>
+                <div class="pill-tag {{ 'good' if lang.complete else 'todo' }}">{{ lang.percent }}%</div>
+              </div>
+              <div class="progress"><div style="width: {{ lang.percent }}%"></div></div>
+            </a>
+          {% else %}
+            <div class="course" style="opacity: 0.55; cursor: not-allowed;">
+              <div class="row" style="justify-content: space-between; align-items: baseline;">
+                <div>
+                  <h3 style="font-weight: 900;">{{ lang.name }}</h3>
+                  <div class="muted">{{ lang.description }}</div>
+                </div>
+                <div class="pill-tag">Coming soon</div>
+              </div>
+              <div class="progress"><div style="width: 0%"></div></div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <aside class="col-4">
+    {% if notifications %}
+      <div class="card card-pad-lg">
+        <div class="row" style="justify-content: space-between;">
+          <h2>Notifications</h2>
+          <form method="post" action="/notifications/read">
+            <button class="btn btn-ghost" type="submit">Mark read</button>
+          </form>
+        </div>
+        <div class="stack" style="margin-top: 10px;">
+          {% for n in notifications %}
+            <div class="stream-item">
+              <div class="stream-title">{{ n.title }}</div>
+              <div class="stream-body">{{ n.body }}</div>
+              <div class="muted" style="margin-top: 6px; font-weight: 700;">{{ n.created_at }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="card card-pad-lg">
+      <h2>Badges</h2>
+      {% if badges %}
+        <div class="badges" style="margin-top: 10px;">
+          {% for b in badges %}
+            <div class="badge">{{ b }}</div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="subtitle">Complete your first lesson to unlock badges.</p>
       {% endif %}
-    {% endfor %}
-  </div>
-</section>
+    </div>
+
+    <div class="card card-pad-lg">
+      <h2>Code For ME</h2>
+      <p class="subtitle">A student-first pathway into programming — built for classrooms and independent learners.</p>
+      <a class="btn btn-secondary" href="https://codeforme.org" target="_blank" rel="noopener" style="margin-top: 10px;">Visit codeforme.org</a>
+    </div>
+  </aside>
+</div>
 
 {% endblock %}

@@ -1,57 +1,165 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="auth-layout">
-  <div class="card glow auth-hero">
-    <h1>CodeCourse</h1>
-    <p class="subtitle">Step-by-step coding lessons + classroom tools for teachers.</p>
+<div class="auth-shell">
+  <div class="card auth-panel">
+    <div class="auth-split">
+      <div class="auth-left">
+        <div class="auth-badge">Code For ME • Learning Platform</div>
+        <h1 style="margin-top: 16px;">Learn coding with structure teachers can actually use.</h1>
+        <p class="subtitle">Short lessons. Clear checkpoints. Classroom tools that feel familiar.</p>
 
-    <ul class="feature-list">
-      <li>Learn Python step-by-step with reading, video, and quizzes</li>
-      <li>Earn XP, keep streaks, and unlock badges</li>
-      <li>Teachers can create classrooms and assign lessons</li>
-    </ul>
-  </div>
+        <div class="auth-steps">
+          <div class="auth-step">
+            <div class="step-dot">1</div>
+            <div>
+              <div style="font-weight: 900;">Choose a track</div>
+              <div class="muted">Python, JavaScript, and more as we grow.</div>
+            </div>
+          </div>
+          <div class="auth-step">
+            <div class="step-dot">2</div>
+            <div>
+              <div style="font-weight: 900;">Complete lessons</div>
+              <div class="muted">Reading, video, then a quiz to check understanding.</div>
+            </div>
+          </div>
+          <div class="auth-step">
+            <div class="step-dot">3</div>
+            <div>
+              <div style="font-weight: 900;">Join a classroom</div>
+              <div class="muted">Teachers post work and grade out of 10.</div>
+            </div>
+          </div>
+        </div>
 
-  <div class="card auth-card">
-    <h2>Create your account</h2>
-    <form method="post">
-      <input type="hidden" name="form_type" value="signup">
-      <input name="name" placeholder="Full name" required>
-      <input name="username" placeholder="Username" required>
-      <input type="email" name="email" placeholder="Email" required>
-      <input type="password" name="password" placeholder="Password" required>
-
-      <div class="inline-grid">
-        <select name="role" required>
-          <option disabled selected>Select role</option>
-          <option>Student</option>
-          <option>Teacher</option>
-        </select>
-        <select name="avatar" required>
-          <option disabled selected>Choose avatar</option>
-          <option value="avatar-1.svg">Nebula</option>
-          <option value="avatar-2.svg">Nova</option>
-          <option value="avatar-3.svg">Orbit</option>
-          <option value="avatar-4.svg">Pulse</option>
-          <option value="avatar-5.svg">Comet</option>
-          <option value="avatar-6.svg">Zenith</option>
-        </select>
+        <div style="margin-top: 18px;" class="row">
+          <a class="btn btn-secondary" href="https://codeforme.org" target="_blank" rel="noopener">Visit codeforme.org</a>
+        </div>
       </div>
 
-      <button class="primary">Enter Platform</button>
-    </form>
+      <div class="auth-right">
+        <div class="tabs" role="tablist" aria-label="Auth">
+          <button class="tab active" id="tab-create" type="button">Create account</button>
+          <button class="tab" id="tab-signin" type="button">Sign in</button>
+        </div>
 
-    <div class="divider"></div>
+        <div id="panel-create" style="margin-top: 16px;">
+          <form method="post" class="form">
+            <input type="hidden" name="form_type" value="signup">
 
-    <h3>Already have an account?</h3>
-    <form method="post">
-      <input type="hidden" name="form_type" value="signin">
-      <input name="username" placeholder="Username" required>
-      <input type="password" name="password" placeholder="Password" required>
-      <button class="secondary">Sign in</button>
-    </form>
+            <div class="form-row">
+              <div class="span-12">
+                <label>Full name</label>
+                <input name="name" placeholder="Your name" required>
+              </div>
+              <div class="span-6">
+                <label>Username</label>
+                <input name="username" placeholder="Choose a username" required>
+              </div>
+              <div class="span-6">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="name@example.com" required>
+              </div>
+              <div class="span-12">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Create a password" required>
+              </div>
+            </div>
+
+            <div class="stack" style="margin-top: 6px;">
+              <label>Role</label>
+              <div class="role-pills" id="role-pills">
+                <button class="pill selected" type="button" data-role="Student">Student</button>
+                <button class="pill" type="button" data-role="Teacher">Teacher</button>
+              </div>
+              <input type="hidden" name="role" id="role" value="Student">
+            </div>
+
+            <div class="stack" style="margin-top: 6px;">
+              <label>Avatar</label>
+              <div class="avatar-grid" id="avatar-grid">
+                {% set avatars = ['avatar-1.svg','avatar-2.svg','avatar-3.svg','avatar-4.svg','avatar-5.svg','avatar-6.svg'] %}
+                {% for a in avatars %}
+                  <div class="avatar-option {{ 'selected' if loop.first else '' }}" data-avatar="{{ a }}" role="button" tabindex="0" aria-label="Select avatar">
+                    <img src="{{ url_for('static', filename='avatars/' + a) }}" alt="avatar option">
+                  </div>
+                {% endfor %}
+              </div>
+              <input type="hidden" name="avatar" id="avatar" value="avatar-1.svg">
+            </div>
+
+            <button class="btn btn-primary" type="submit" style="margin-top: 10px;">Create account</button>
+          </form>
+
+          <p class="muted" style="margin-top: 12px; font-weight: 700;">Already have an account? Use the Sign in tab.</p>
+        </div>
+
+        <div id="panel-signin" style="margin-top: 16px; display: none;">
+          <form method="post" class="form">
+            <input type="hidden" name="form_type" value="signin">
+            <label>Username</label>
+            <input name="username" placeholder="Your username" required>
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Your password" required>
+            <button class="btn btn-primary" type="submit">Sign in</button>
+          </form>
+
+          <div class="card" style="margin-top: 14px; padding: 14px; border-radius: 16px; background: rgba(255,255,255,0.7);">
+            <div style="font-weight: 900;">Admin</div>
+            <div class="muted">Admin sign-in is at <a href="/admin/login">/admin/login</a>.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
   </div>
 </div>
+
+<script>
+const tabCreate = document.getElementById('tab-create');
+const tabSignin = document.getElementById('tab-signin');
+const panelCreate = document.getElementById('panel-create');
+const panelSignin = document.getElementById('panel-signin');
+
+function setTab(which) {
+  const isCreate = which === 'create';
+  tabCreate.classList.toggle('active', isCreate);
+  tabSignin.classList.toggle('active', !isCreate);
+  panelCreate.style.display = isCreate ? 'block' : 'none';
+  panelSignin.style.display = isCreate ? 'none' : 'block';
+}
+
+tabCreate.addEventListener('click', () => setTab('create'));
+tabSignin.addEventListener('click', () => setTab('signin'));
+
+const rolePills = document.getElementById('role-pills');
+const roleInput = document.getElementById('role');
+if (rolePills && roleInput) {
+  rolePills.querySelectorAll('button[data-role]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      rolePills.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      roleInput.value = btn.dataset.role;
+    });
+  });
+}
+
+const avatarGrid = document.getElementById('avatar-grid');
+const avatarInput = document.getElementById('avatar');
+function selectAvatar(el) {
+  avatarGrid.querySelectorAll('.avatar-option').forEach(a => a.classList.remove('selected'));
+  el.classList.add('selected');
+  avatarInput.value = el.dataset.avatar;
+}
+if (avatarGrid && avatarInput) {
+  avatarGrid.querySelectorAll('.avatar-option').forEach(el => {
+    el.addEventListener('click', () => selectAvatar(el));
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') selectAvatar(el);
+    });
+  });
+}
+</script>
 
 {% endblock %}

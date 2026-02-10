@@ -1,53 +1,67 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="language-hero">
-  <div>
-    <h1>{{ lang.name }} Path</h1>
-    <p class="subtitle">Complete each bubble to unlock the next lesson.</p>
-  </div>
-  <div class="language-meta">
-    <div class="meta-chip">Lessons: {{ lang.lessons|length }}</div>
-    <div class="meta-chip">Track: {{ lang.name }} Basics</div>
-  </div>
-</section>
-
-<div class="roadmap">
-  {% for lesson in lang.lessons %}
-    {% if lesson.id in completed %}
-      <div class="bubble completed">{{ lesson.id }}</div>
-    {% elif lesson.id == (completed|length + 1) %}
-      <a href="/student/lesson/{{ lang.id }}/{{ lesson.id }}" class="bubble active">{{ lesson.id }}</a>
-    {% else %}
-      <div class="bubble locked">{{ lesson.id }}</div>
-    {% endif %}
-  {% endfor %}
-</div>
-
-<div class="lesson-list">
-  {% for lesson in lang.lessons %}
-    <div class="lesson-row">
-      <div>
-        <h3>{{ lesson.title }}</h3>
-        <p class="muted">XP: {{ lesson.xp }}</p>
-      </div>
-      {% if lesson.id in completed %}
-        <span class="pill completed">Completed</span>
-      {% elif lesson.id == (completed|length + 1) %}
-        <a href="/student/lesson/{{ lang.id }}/{{ lesson.id }}" class="pill active">Start</a>
-      {% else %}
-        <span class="pill locked">Locked</span>
-      {% endif %}
+<div class="card card-pad-lg" style="margin-bottom: 16px;">
+  <div class="row" style="justify-content: space-between; align-items: end; flex-wrap: wrap;">
+    <div>
+      <h1>{{ lang.name }}</h1>
+      <p class="subtitle">Complete each lesson to unlock the next one.</p>
     </div>
-  {% endfor %}
+    <div class="row" style="gap: 10px; flex-wrap: wrap;">
+      <span class="pill-tag">Lessons: {{ lang.lessons|length }}</span>
+      <span class="pill-tag good">Completed: {{ completed|length }}</span>
+    </div>
+  </div>
 </div>
 
-{% if completed|length == lang.lessons|length %}
-<div class="card certificate-callout">
-  <h2>Certificate Ready</h2>
-  <p>You completed all lessons. Download your certificate!</p>
-  <a href="/student/language/{{ lang.id }}/certificate"><button class="primary">View Certificate</button></a>
+<div class="card card-pad-lg" style="margin-bottom: 16px;">
+  <h2>Path</h2>
+  <div class="roadmap" style="margin-top: 10px;">
+    {% for lesson in lang.lessons %}
+      {% if lesson.id in completed %}
+        <div class="bubble completed">{{ lesson.id }}</div>
+      {% elif lesson.id == (completed|length + 1) %}
+        <a href="/student/lesson/{{ lang.id }}/{{ lesson.id }}" class="bubble active">{{ lesson.id }}</a>
+      {% else %}
+        <div class="bubble locked">{{ lesson.id }}</div>
+      {% endif %}
+    {% endfor %}
+  </div>
 </div>
-{% endif %}
+
+<div class="card card-pad-lg">
+  <h2>Lessons</h2>
+  <div class="stack" style="margin-top: 10px;">
+    {% for lesson in lang.lessons %}
+      <div class="assignment-row">
+        <div>
+          <div style="font-weight: 900;">{{ lesson.title }}</div>
+          <div class="muted">XP: {{ lesson.xp }}</div>
+        </div>
+        <div class="assignment-actions">
+          {% if lesson.id in completed %}
+            <span class="pill-tag good">Completed</span>
+          {% elif lesson.id == (completed|length + 1) %}
+            <a class="btn btn-primary" href="/student/lesson/{{ lang.id }}/{{ lesson.id }}">Start</a>
+          {% else %}
+            <span class="pill-tag">Locked</span>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if completed|length == lang.lessons|length %}
+    <div class="card" style="margin-top: 16px; padding: 16px; border-radius: 18px; background: rgba(15,157,88,0.06); border: 1px solid rgba(15,157,88,0.18);">
+      <div class="row" style="justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div>
+          <div style="font-weight: 900;">Certificate ready</div>
+          <div class="muted">You completed {{ lang.name }} Basics.</div>
+        </div>
+        <a class="btn btn-secondary" href="/student/language/{{ lang.id }}/certificate">View certificate</a>
+      </div>
+    </div>
+  {% endif %}
+</div>
 
 {% endblock %}
