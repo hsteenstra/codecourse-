@@ -21,8 +21,8 @@
         {% for item in stream_items %}
           <div class="stream-item">
             <div class="stream-title">{{ item.title }}</div>
-            <div class="stream-body">{{ item.body }}</div>
-            <div class="muted" style="margin-top: 6px; font-weight: 700;">{{ item.created_at }}</div>
+            <div class="stream-body" style="white-space: pre-line;">{{ item.body }}</div>
+            <div class="muted" style="margin-top: 6px; font-weight: 700;">{{ item.created_at|fmt_dt }}</div>
           </div>
         {% endfor %}
       {% else %}

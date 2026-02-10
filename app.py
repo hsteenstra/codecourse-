@@ -245,6 +245,32 @@ def migrate_db():
 def now_ts():
     return datetime.utcnow().isoformat()
 
+@app.template_filter("fmt_dt")
+def fmt_dt(value: str | None):
+    """Format ISO timestamps stored in DB into something human-readable."""
+    if not value:
+        return ""
+    try:
+        # Stored by us as UTC ISO without timezone.
+        dt = datetime.fromisoformat(value.replace("Z", ""))
+    except Exception:
+        return value
+    d = dt.date()
+    today = date.today()
+    if d == today:
+        day = "Today"
+    elif d == (today - timedelta(days=1)):
+        day = "Yesterday"
+    else:
+        # Drop the year if it's this year to reduce noise.
+        if d.year == today.year:
+            day = dt.strftime("%b %d").replace(" 0", " ")
+        else:
+            day = dt.strftime("%b %d, %Y").replace(" 0", " ")
+
+    time = dt.strftime("%I:%M %p").lstrip("0")
+    return f"{day} • {time}"
+
 
 # ---------------- Lessons ----------------
 

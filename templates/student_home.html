@@ -3,22 +3,16 @@
 
 <div class="grid">
   <section class="col-8">
-    <div class="card hero card-pad-lg">
-      <h1>Welcome back, {{ name }}.</h1>
-      <p class="subtitle">Pick a track, continue where you left off, and keep building your skills.</p>
+    <div class="hero">
+      <div class="stage">
+        <div class="kicker">Code For ME • Student</div>
+        <h1 style="margin-top: 14px;">Welcome back, {{ name }}.</h1>
+        <p class="subtitle">Choose a track and keep moving forward — your progress is saved automatically.</p>
 
-      <div class="stats" style="margin-top: 14px;">
-        <div class="stat">
-          <div class="label">Total XP</div>
-          <div class="value">{{ total_xp }}</div>
-        </div>
-        <div class="stat">
-          <div class="label">Streak</div>
-          <div class="value">{{ streak }} days</div>
-        </div>
-        <div class="stat">
-          <div class="label">Badges</div>
-          <div class="value">{{ badges|length }}</div>
+        <div class="chips">
+          <div class="chip">Total XP: <strong>{{ total_xp }}</strong></div>
+          <div class="chip">Streak: <strong>{{ streak }}</strong> days</div>
+          <div class="chip">Badges: <strong>{{ badges|length }}</strong></div>
         </div>
       </div>
     </div>
@@ -73,7 +67,7 @@
             <div class="stream-item">
               <div class="stream-title">{{ n.title }}</div>
               <div class="stream-body">{{ n.body }}</div>
-              <div class="muted" style="margin-top: 6px; font-weight: 700;">{{ n.created_at }}</div>
+              <div class="muted" style="margin-top: 6px; font-weight: 700;">{{ n.created_at|fmt_dt }}</div>
             </div>
           {% endfor %}
         </div>

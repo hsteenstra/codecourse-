@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -20,8 +22,8 @@
       </div>
     </a>
 
-    {% if session.get('user_id') %}
-      <nav class="nav-links" aria-label="Primary">
+    <nav class="nav-links" aria-label="Primary">
+      {% if session.get('user_id') %}
         {% if session.get('role') == 'Student' %}
           <a href="/student/home">Dashboard</a>
           <a href="/student/classroom">Classroom</a>
@@ -32,8 +34,13 @@
         {% endif %}
         <a href="/reach-out">Support</a>
         <a href="/logout">Log out</a>
-      </nav>
+      {% else %}
+        <a href="https://codeforme.org" target="_blank" rel="noopener">codeforme.org</a>
+        <a href="/admin/login">Admin</a>
+      {% endif %}
+    </nav>
 
+    {% if session.get('user_id') %}
       <div class="profile">
         {% if session.get('avatar') %}
           <img src="{{ url_for('static', filename='avatars/' + session.get('avatar')) }}" alt="avatar">

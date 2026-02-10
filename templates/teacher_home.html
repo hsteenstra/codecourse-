@@ -3,11 +3,14 @@
 
 <div class="grid">
   <section class="col-8">
-    <div class="card hero card-pad-lg">
-      <h1>Teacher dashboard</h1>
-      <p class="subtitle">Create classrooms, post work, and grade out of 10 — all in one place.</p>
-      <div class="row" style="margin-top: 14px; flex-wrap: wrap;">
-        <a class="btn btn-primary" href="/teacher/classroom/create">Create classroom</a>
+    <div class="hero">
+      <div class="stage">
+        <div class="kicker">Code For ME • Teacher</div>
+        <h1 style="margin-top: 14px;">Teacher dashboard</h1>
+        <p class="subtitle">Create classrooms, post assignments, and grade out of 10 — in a workflow that feels familiar.</p>
+        <div class="row" style="margin-top: 14px; flex-wrap: wrap;">
+          <a class="btn btn-primary" href="/teacher/classroom/create">Create classroom</a>
+        </div>
       </div>
     </div>
 
@@ -51,7 +54,7 @@
             <div class="stream-item">
               <div class="stream-title">{{ n.title }}</div>
               <div class="stream-body">{{ n.body }}</div>
-              <div class="muted" style="margin-top: 6px; font-weight: 700;">{{ n.created_at }}</div>
+              <div class="muted" style="margin-top: 6px; font-weight: 700;">{{ n.created_at|fmt_dt }}</div>
             </div>
           {% endfor %}
         </div>
