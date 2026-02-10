@@ -285,6 +285,19 @@ def migrate_db():
 def now_ts():
     return datetime.utcnow().isoformat()
 
+
+def get_avatar_options() -> list[str]:
+    avatar_dir = BASE_DIR / "static" / "avatars"
+    if not avatar_dir.exists():
+        return []
+    allowed = {".png", ".jpg", ".jpeg", ".svg", ".webp"}
+    avatars = [
+        p.name
+        for p in avatar_dir.iterdir()
+        if p.is_file() and p.suffix.lower() in allowed
+    ]
+    return sorted(avatars)
+
 @app.template_filter("fmt_dt")
 def fmt_dt(value: str | None):
     """Format ISO timestamps stored in DB into something human-readable."""
@@ -675,7 +688,17 @@ def login():
                 return redirect(url_for("join_class_by_code", code=code))
             return redirect(url_for("student_home" if user["role"] == "Student" else "teacher_home"))
 
-    return render_template("login.html")
+    avatars = get_avatar_options()
+    if not avatars:
+        avatars = [
+            "avatar-1.svg",
+            "avatar-2.svg",
+            "avatar-3.svg",
+            "avatar-4.svg",
+            "avatar-5.svg",
+            "avatar-6.svg",
+        ]
+    return render_template("login.html", avatars=avatars)
 
 
 @app.route("/admin/login", methods=["GET", "POST"])

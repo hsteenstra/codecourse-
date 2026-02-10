@@ -55,14 +55,13 @@
             <div class="stack" style="margin-top: 6px;">
               <label>Avatar</label>
               <div class="avatar-grid" id="avatar-grid">
-                {% set avatars = ['avatar-1.svg','avatar-2.svg','avatar-3.svg','avatar-4.svg','avatar-5.svg','avatar-6.svg'] %}
                 {% for a in avatars %}
                   <div class="avatar-option {{ 'selected' if loop.first else '' }}" data-avatar="{{ a }}" role="button" tabindex="0" aria-label="Select avatar">
                     <img src="{{ url_for('static', filename='avatars/' + a) }}" alt="avatar option">
                   </div>
                 {% endfor %}
               </div>
-              <input type="hidden" name="avatar" id="avatar" value="avatar-1.svg">
+              <input type="hidden" name="avatar" id="avatar" value="{{ avatars[0] if avatars else 'avatar-1.svg' }}">
             </div>
 
             <button class="btn btn-primary" type="submit" style="margin-top: 10px;">Create account</button>
