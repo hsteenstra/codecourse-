@@ -1477,6 +1477,14 @@ def teacher_assignment_comment(assignment_id):
     return redirect(request.referrer or url_for("teacher_home"))
 
 
+@app.route("/codespace")
+def codespace():
+    guard = require_login()
+    if guard:
+        return guard
+    return render_template("codespace.html")
+
+
 # ---------------- Teacher ----------------
 @app.route("/teacher/home")
 def teacher_home():

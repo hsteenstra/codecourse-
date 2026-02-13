@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="stage">
+  <div class="kicker">CodeCourse • Code Space</div>
+  <h1 style="margin-top: 14px;">Write HTML + CSS + JS here</h1>
+  <p class="subtitle">Click Run to preview your page instantly. For Python, open the recommended site below.</p>
+  <div class="row wrap" style="margin-top: 16px;">
+    <a class="btn btn-secondary" href="https://runtrinket.com/" target="_blank" rel="noopener">Open Python on Trinket</a>
+  </div>
+</section>
+
+<div class="codespace-shell" style="margin-top: 18px;">
+  <div class="code-editor">
+    <div class="panel-title">Editor</div>
+
+    <div class="code-pane">
+      <div class="code-label">HTML</div>
+      <textarea id="html-input" rows="10" spellcheck="false"><div class="card demo-card">
+  <h2>Hello, CodeCourse</h2>
+  <p>Build your first layout with HTML and CSS.</p>
+  <button class="demo-btn">Click me</button>
+</div></textarea>
+    </div>
+
+    <div class="code-pane">
+      <div class="code-label">CSS</div>
+      <textarea id="css-input" rows="10" spellcheck="false">body { font-family: 'Manrope', sans-serif; padding: 24px; }
+.demo-card { padding: 24px; border-radius: 18px; background: #ffffff; box-shadow: 0 16px 40px rgba(11,31,75,0.12); }
+.demo-btn { margin-top: 10px; background: #1b5fd6; color: white; border: none; padding: 10px 16px; border-radius: 999px; }</textarea>
+    </div>
+
+    <div class="code-pane">
+      <div class="code-label">JavaScript</div>
+      <textarea id="js-input" rows="8" spellcheck="false">const btn = document.querySelector('.demo-btn');\nbtn?.addEventListener('click', () => {\n  btn.textContent = 'Nice work!';\n});</textarea>
+    </div>
+
+    <div class="code-actions">
+      <button class="btn btn-primary" type="button" id="run-btn">Run</button>
+      <button class="btn btn-ghost" type="button" id="reset-btn">Reset</button>
+    </div>
+  </div>
+
+  <div class="code-preview">
+    <div class="panel-title">Preview</div>
+    <iframe id="preview-frame" class="code-iframe" title="Preview"></iframe>
+  </div>
+</div>
+
+<script>
+const htmlInput = document.getElementById('html-input');
+const cssInput = document.getElementById('css-input');
+const jsInput = document.getElementById('js-input');
+const preview = document.getElementById('preview-frame');
+const runBtn = document.getElementById('run-btn');
+const resetBtn = document.getElementById('reset-btn');
+
+const defaultHtml = htmlInput.value;
+const defaultCss = cssInput.value;
+const defaultJs = jsInput.value;
+
+function runPreview() {
+  const doc = `
+    <html>
+      <head>
+        <style>${cssInput.value}</style>
+      </head>
+      <body>${htmlInput.value}</body>
+      <script>${jsInput.value}<\/script>
+    </html>
+  `;
+  preview.srcdoc = doc;
+}
+
+runBtn.addEventListener('click', runPreview);
+resetBtn.addEventListener('click', () => {
+  htmlInput.value = defaultHtml;
+  cssInput.value = defaultCss;
+  jsInput.value = defaultJs;
+  runPreview();
+});
+
+runPreview();
+</script>
+
+{% endblock %}

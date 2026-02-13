@@ -28,8 +28,10 @@
         {% if session.get('role') == 'Student' %}
           <a href="/student/home">Dashboard</a>
           <a href="/student/classroom">Classroom</a>
+          <a href="/codespace">Code Space</a>
         {% elif session.get('role') == 'Teacher' %}
           <a href="/teacher/home">Dashboard</a>
+          <a href="/codespace">Code Space</a>
         {% else %}
           <a href="/admin">Admin</a>
         {% endif %}
