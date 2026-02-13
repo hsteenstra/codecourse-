@@ -2,10 +2,11 @@
 {% block content %}
 
 <div class="lesson-shell">
+  {% set is_python_intro = (lang.id == 'python' and lesson.id == 1) %}
   <section class="stage">
     <div class="kicker">{{ lang.name }} • Lesson {{ lesson.id }}</div>
     <h1 style="margin-top: 14px;">{{ lesson.title }}</h1>
-    <p class="subtitle">Read, watch, then take the quiz to complete this lesson.</p>
+    <p class="subtitle">{% if is_python_intro %}Watch, code, then take the quiz to complete this lesson.{% else %}Read, watch, then take the quiz to complete this lesson.{% endif %}</p>
     <div class="chips">
       <div class="chip">XP: <strong>{{ lesson.xp }}</strong></div>
       <div class="chip">Pass score: <strong>70%</strong></div>
@@ -28,9 +29,15 @@
     <div class="lesson-steps">
       <div class="lesson-stepper" aria-hidden="true">
         <div class="stepper-pill active" data-step-pill="0">Start</div>
-        <div class="stepper-pill" data-step-pill="1">Reading</div>
-        <div class="stepper-pill" data-step-pill="2">Video</div>
-        <div class="stepper-pill" data-step-pill="3">Quiz</div>
+        {% if is_python_intro %}
+          <div class="stepper-pill" data-step-pill="1">Video</div>
+          <div class="stepper-pill" data-step-pill="2">Code</div>
+          <div class="stepper-pill" data-step-pill="3">Quiz</div>
+        {% else %}
+          <div class="stepper-pill" data-step-pill="1">Reading</div>
+          <div class="stepper-pill" data-step-pill="2">Video</div>
+          <div class="stepper-pill" data-step-pill="3">Quiz</div>
+        {% endif %}
       </div>
 
       <div class="step" data-step="0">
@@ -43,45 +50,105 @@
 
       <div class="step" data-step="1">
         <div class="lesson-card">
-          <div class="row between baseline wrap">
-            <h2>Reading</h2>
-            <span class="pill-tag">Step 1 of 3</span>
-          </div>
-          <div class="reading-grid">
-            <div>
-              <p class="reading-text" id="reading-text">{{ lesson.reading }}</p>
-              <button class="btn btn-ghost" type="button" id="highlight-btn" style="margin-top: 12px;">Highlight selection</button>
+          {% if is_python_intro %}
+            <div class="row between baseline wrap">
+              <h2>Video + Transcript</h2>
+              <span class="pill-tag">Step 1 of 3</span>
+            </div>
+            {% if lesson.video_url %}
+              <div class="video-frame" style="margin-top: 12px;">
+                <iframe src="{{ lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
+              </div>
+            {% else %}
+              <div class="video-placeholder" style="margin-top: 12px;">
+                No video yet for this lesson. (You can add a video URL in the admin panel.)
+              </div>
+            {% endif %}
+            <div class="transcript-card">
+              <div class="panel-title">Transcript</div>
+              <div class="reading-text" style="margin-top: 10px;">{{ lesson.reading }}</div>
+            </div>
+            <button class="btn btn-primary" type="button" data-next style="margin-top: 12px;">Next: Code</button>
+          {% else %}
+            <div class="row between baseline wrap">
+              <h2>Reading</h2>
+              <span class="pill-tag">Step 1 of 3</span>
+            </div>
+            <div class="reading-grid">
+              <div>
+                <p class="reading-text" id="reading-text">{{ lesson.reading }}</p>
+                <button class="btn btn-ghost" type="button" id="highlight-btn" style="margin-top: 12px;">Highlight selection</button>
+              </div>
+
+              <div class="notes-card">
+                <form method="post" action="/student/lesson/{{ lang.id }}/{{ lesson.id }}/notes" class="form">
+                  <label>Notes</label>
+                  <textarea name="notes" rows="10" placeholder="Write your notes here...">{{ notes }}</textarea>
+                  <button class="btn btn-secondary" type="submit">Save notes</button>
+                </form>
+              </div>
             </div>
 
-            <div class="notes-card">
-              <form method="post" action="/student/lesson/{{ lang.id }}/{{ lesson.id }}/notes" class="form">
-                <label>Notes</label>
-                <textarea name="notes" rows="10" placeholder="Write your notes here...">{{ notes }}</textarea>
-                <button class="btn btn-secondary" type="submit">Save notes</button>
-              </form>
-            </div>
-          </div>
-
-          <button class="btn btn-primary" type="button" data-next style="margin-top: 12px;">Next: Video</button>
+            <button class="btn btn-primary" type="button" data-next style="margin-top: 12px;">Next: Video</button>
+          {% endif %}
         </div>
       </div>
 
       <div class="step" data-step="2">
         <div class="lesson-card">
-          <div class="row between baseline wrap">
-            <h2>Video</h2>
-            <span class="pill-tag">Step 2 of 3</span>
-          </div>
-          {% if lesson.video_url %}
-            <div class="video-frame" style="margin-top: 12px;">
-              <iframe src="{{ lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
+          {% if is_python_intro %}
+            <div class="row between baseline wrap">
+              <h2>Code Challenge</h2>
+              <span class="pill-tag">Step 2 of 3</span>
             </div>
+
+            <div class="code-challenge">
+              <div class="challenge-head">
+                <div class="challenge-title">Prompt</div>
+                <div class="challenge-text">Write a `print()` function that outputs: <strong>Hello, CodeCourse!</strong></div>
+              </div>
+
+              <div class="challenge-grid">
+                <div>
+                  <label>Python code</label>
+                  <textarea id="py-code" rows="8" spellcheck="false">print("Hello, CodeCourse!")</textarea>
+                  <div class="code-actions">
+                    <button class="btn btn-primary" type="button" id="check-code">Check</button>
+                    <button class="btn btn-ghost" type="button" id="run-code">Run</button>
+                  </div>
+                </div>
+
+                <div class="output-card">
+                  <div class="panel-title">Output</div>
+                  <pre id="py-output">Click Run to see the output.</pre>
+                  <div id="code-status" class="muted" style="margin-top: 8px;">Click Check when you're ready.</div>
+                </div>
+              </div>
+            </div>
+
+            <form method="post" action="/student/lesson/{{ lang.id }}/{{ lesson.id }}/notes" class="form" style="margin-top: 12px;">
+              <label>Comment (optional)</label>
+              <textarea name="notes" rows="4" placeholder="Add a comment or note...">{{ notes }}</textarea>
+              <button class="btn btn-secondary" type="submit">Save comment</button>
+            </form>
+
+            <button class="btn btn-primary" type="button" data-next id="code-next" style="margin-top: 12px;" disabled>Next: Quiz</button>
           {% else %}
-            <div class="video-placeholder" style="margin-top: 12px;">
-              No video yet for this lesson. (You can add a video URL in the admin panel.)
+            <div class="row between baseline wrap">
+              <h2>Video</h2>
+              <span class="pill-tag">Step 2 of 3</span>
             </div>
+            {% if lesson.video_url %}
+              <div class="video-frame" style="margin-top: 12px;">
+                <iframe src="{{ lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
+              </div>
+            {% else %}
+              <div class="video-placeholder" style="margin-top: 12px;">
+                No video yet for this lesson. (You can add a video URL in the admin panel.)
+              </div>
+            {% endif %}
+            <button class="btn btn-primary" type="button" data-next style="margin-top: 12px;">Next: Quiz</button>
           {% endif %}
-          <button class="btn btn-primary" type="button" data-next style="margin-top: 12px;">Next: Quiz</button>
         </div>
       </div>
 
@@ -129,8 +196,8 @@
   {% endif %}
 </div>
 
-{% if quiz_result and quiz_result.all_correct %}
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+{% if quiz_result and quiz_result.all_correct %}
 <script>
 confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } });
 </script>
@@ -172,6 +239,48 @@ if (highlightBtn && readingText) {
     selection.removeAllRanges();
   });
 }
+
+const checkBtn = document.getElementById('check-code');
+const runBtn = document.getElementById('run-code');
+const codeInput = document.getElementById('py-code');
+const output = document.getElementById('py-output');
+const status = document.getElementById('code-status');
+const nextBtn = document.getElementById('code-next');
+
+function runPythonPreview() {
+  if (!codeInput || !output) return;
+  const code = codeInput.value;
+  const match = code.match(/print\\s*\\((.*)\\)/);
+  if (match) {
+    let inner = match[1].trim();
+    if ((inner.startsWith('"') && inner.endsWith('"')) || (inner.startsWith(\"'\") && inner.endsWith(\"'\"))) {
+      inner = inner.slice(1, -1);
+    }
+    output.textContent = inner;
+  } else {
+    output.textContent = \"(no output)\";
+  }
+}
+
+function checkPythonCode() {
+  if (!codeInput || !status || !nextBtn) return;
+  const code = codeInput.value;
+  const correct = /print\\s*\\(/.test(code) && /Hello,\\s*CodeCourse!/.test(code);
+  if (correct) {
+    status.textContent = \"Great job! You got it right.\";
+    status.classList.add('success');
+    nextBtn.disabled = false;
+    if (window.confetti) {
+      confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
+    }
+  } else {
+    status.textContent = \"Not quite. Make sure your print outputs: Hello, CodeCourse!\"; 
+    status.classList.remove('success');
+  }
+}
+
+if (runBtn) runBtn.addEventListener('click', runPythonPreview);
+if (checkBtn) checkBtn.addEventListener('click', checkPythonCode);
 </script>
 
 {% endblock %}

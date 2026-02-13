@@ -971,6 +971,55 @@ mark { background: rgba(247, 181, 0, 0.40); padding: 0 4px; border-radius: 6px; 
 .choice { display: block; margin: 8px 0; color: rgba(7,17,42,0.76); font-weight: 700; }
 .success { color: rgba(15, 116, 101, 1); font-weight: 900; }
 
+.transcript-card {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(11, 31, 75, 0.08);
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.code-challenge {
+  margin-top: 14px;
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(11, 31, 75, 0.10);
+  box-shadow: var(--shadow-md);
+}
+
+.challenge-head { display: grid; gap: 6px; }
+.challenge-title { font-weight: 900; color: rgba(11, 31, 75, 0.86); }
+.challenge-text { color: rgba(11, 31, 75, 0.76); }
+
+.challenge-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 16px;
+  align-items: start;
+  margin-top: 14px;
+}
+
+.output-card {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(11, 31, 75, 0.10);
+  background: rgba(233, 241, 255, 0.46);
+}
+
+.output-card pre {
+  margin-top: 8px;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(11, 31, 75, 0.10);
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 120px;
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
 /* -------------------------------- Admin -------------------------------- */
 
 .admin-layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 26px; }
@@ -1058,6 +1107,7 @@ mark { background: rgba(247, 181, 0, 0.40); padding: 0 4px; border-radius: 6px; 
   .path-node.right .path-bubble { grid-column: 1; }
   .path-node .path-spacer { display: none; }
   .codespace-shell { grid-template-columns: 1fr; }
+  .challenge-grid { grid-template-columns: 1fr; }
 }
 
 @media print {
