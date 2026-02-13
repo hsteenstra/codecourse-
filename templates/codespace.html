@@ -4,15 +4,29 @@
 <section class="stage">
   <div class="kicker">CodeCourse • Code Space</div>
   <h1 style="margin-top: 14px;">Write HTML + CSS + JS here</h1>
-  <p class="subtitle">Click Run to preview your page instantly. For Python, open the recommended site below.</p>
+  <p class="subtitle">Click Run to preview your page instantly. Choose a mode below.</p>
   <div class="row wrap" style="margin-top: 16px;">
-    <a class="btn btn-secondary" href="https://runtrinket.com/" target="_blank" rel="noopener">Open Python on Trinket</a>
+    <a class="btn btn-secondary" href="https://www.online-python.com/" target="_blank" rel="noopener">Open Python on online-python.com</a>
+    <a class="btn btn-ghost" href="https://www.online-compiler.com/en/compiler/java" target="_blank" rel="noopener">Open Java on online-compiler.com</a>
   </div>
 </section>
 
 <div class="codespace-shell" style="margin-top: 18px;">
   <div class="code-editor">
     <div class="panel-title">Editor</div>
+
+    <div class="code-mode">
+      <label for="mode-select">Mode</label>
+      <select id="mode-select">
+        <option value="html-css-js">HTML + CSS + JS</option>
+        <option value="html-only">HTML only</option>
+        <option value="css-only">CSS only</option>
+        <option value="js-only">JavaScript only</option>
+        <option value="python">Python (external)</option>
+        <option value="java">Java (external)</option>
+      </select>
+      <p class="muted" id="mode-note" style="margin-top: 8px;">HTML/CSS/JS runs here. Python and Java open in a new site.</p>
+    </div>
 
     <div class="code-pane">
       <div class="code-label">HTML</div>
@@ -54,6 +68,13 @@ const jsInput = document.getElementById('js-input');
 const preview = document.getElementById('preview-frame');
 const runBtn = document.getElementById('run-btn');
 const resetBtn = document.getElementById('reset-btn');
+const modeSelect = document.getElementById('mode-select');
+const modeNote = document.getElementById('mode-note');
+const panes = {
+  html: htmlInput.closest('.code-pane'),
+  css: cssInput.closest('.code-pane'),
+  js: jsInput.closest('.code-pane'),
+};
 
 const defaultHtml = htmlInput.value;
 const defaultCss = cssInput.value;
@@ -72,6 +93,40 @@ function runPreview() {
   preview.srcdoc = doc;
 }
 
+function setMode(mode) {
+  if (mode === 'html-only') {
+    panes.html.style.display = '';
+    panes.css.style.display = 'none';
+    panes.js.style.display = 'none';
+    modeNote.textContent = 'HTML runs here.';
+  } else if (mode === 'css-only') {
+    panes.html.style.display = 'none';
+    panes.css.style.display = '';
+    panes.js.style.display = 'none';
+    modeNote.textContent = 'CSS runs here (add HTML later if needed).';
+  } else if (mode === 'js-only') {
+    panes.html.style.display = 'none';
+    panes.css.style.display = 'none';
+    panes.js.style.display = '';
+    modeNote.textContent = 'JavaScript runs here (add HTML later if needed).';
+  } else if (mode === 'python') {
+    panes.html.style.display = 'none';
+    panes.css.style.display = 'none';
+    panes.js.style.display = 'none';
+    modeNote.textContent = 'Python opens in online-python.com.';
+  } else if (mode === 'java') {
+    panes.html.style.display = 'none';
+    panes.css.style.display = 'none';
+    panes.js.style.display = 'none';
+    modeNote.textContent = 'Java opens in online-compiler.com.';
+  } else {
+    panes.html.style.display = '';
+    panes.css.style.display = '';
+    panes.js.style.display = '';
+    modeNote.textContent = 'HTML/CSS/JS runs here. Python and Java open in a new site.';
+  }
+}
+
 runBtn.addEventListener('click', runPreview);
 resetBtn.addEventListener('click', () => {
   htmlInput.value = defaultHtml;
@@ -80,6 +135,11 @@ resetBtn.addEventListener('click', () => {
   runPreview();
 });
 
+modeSelect.addEventListener('change', (e) => {
+  setMode(e.target.value);
+});
+
+setMode(modeSelect.value);
 runPreview();
 </script>
 
