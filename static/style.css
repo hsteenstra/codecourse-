@@ -12,8 +12,8 @@
   --ink-soft: rgba(7, 17, 42, 0.72);
 
   /* Typography */
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
-  --font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+  --font-display: "Outfit", ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+  --font-body: "Poppins", ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
 
   /* Surfaces */
   --bg: #ffffff;
@@ -969,6 +969,48 @@ mark { background: rgba(247, 181, 0, 0.40); padding: 0 4px; border-radius: 6px; 
 .quiz-block { margin-top: 12px; padding: 16px; border-radius: 18px; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.36); }
 .quiz-question { font-weight: 900; margin-bottom: 10px; }
 .choice { display: block; margin: 8px 0; color: rgba(7,17,42,0.76); font-weight: 700; }
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(11, 31, 75, 0.08);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.choice input[type="radio"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(11, 31, 75, 0.35);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.choice input[type="radio"]::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.choice input[type="radio"]:checked {
+  border-color: var(--blue);
+  background: rgba(27, 95, 214, 0.15);
+}
+
+.choice input[type="radio"]:checked::after {
+  background: var(--blue);
+}
+
+.choice.selected {
+  border-color: rgba(27, 95, 214, 0.35);
+  background: rgba(27, 95, 214, 0.10);
+}
 .success { color: rgba(15, 116, 101, 1); font-weight: 900; }
 
 .transcript-card {
