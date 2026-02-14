@@ -283,27 +283,26 @@ function setChallenge(idx) {
   if (nextBtn) nextBtn.disabled = true;
 }
 
+function getPrintedValue(code) {
+  const match = code.match(/print\s*\(\s*(['"])(.*?)\1\s*\)/);
+  return match ? match[2] : null;
+}
+
 function runPythonPreview() {
   if (!codeInput || !output) return;
-  const code = codeInput.value;
-  const match = code.match(/print\\s*\\(\\s*([\"'])(.*?)\\1\\s*\\)/);
-  if (match) {
-    output.textContent = match[2];
-  } else {
-    output.textContent = "(no output yet)";
-  }
+  const printed = getPrintedValue(codeInput.value);
+  output.textContent = printed !== null ? printed : "(no output yet)";
 }
 
 function checkPythonCode() {
   if (!codeInput || !status || !nextBtn) return;
-  const code = codeInput.value;
   const c = challenges[currentChallenge];
+  const printed = getPrintedValue(codeInput.value);
   let correct = false;
   if (c.expected) {
-    const re = new RegExp(`print\\\\s*\\\\(\\\\s*['\\\"]${c.expected.replace(/[-/\\\\^$*+?.()|[\\]{}]/g, '\\\\$&')}['\\\"]\\\\s*\\\\)`);
-    correct = re.test(code);
+    correct = printed === c.expected;
   } else {
-    correct = /print\\s*\\(\\s*['\"][^'\"]+['\"]\\s*\\)/.test(code);
+    correct = printed !== null && printed.trim().length > 0;
   }
   if (correct) {
     status.textContent = "Great job! You got it right.";
@@ -320,7 +319,7 @@ function checkPythonCode() {
       confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
     }
   } else {
-    status.textContent = "Not quite. Make sure your print uses print() and matches the prompt.";
+    status.textContent = "Not quite. Use print() and make sure the output matches the prompt.";
     status.classList.remove('success');
   }
 }
