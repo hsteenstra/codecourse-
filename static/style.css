@@ -12,8 +12,8 @@
   --ink-soft: rgba(7, 17, 42, 0.72);
 
   /* Typography */
-  --font-display: "Sora", ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
-  --font-body: "Manrope", ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+  --font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
 
   /* Surfaces */
   --bg: #ffffff;
@@ -1121,4 +1121,34 @@ mark { background: rgba(247, 181, 0, 0.40); padding: 0 4px; border-radius: 6px; 
     border: 2px solid rgba(7, 17, 42, 0.18);
     background: #fff;
   }
+}
+.lesson-flow {
+  min-height: calc(100vh - 140px);
+}
+
+.lesson-flow .step {
+  min-height: calc(100vh - 240px);
+  display: none;
+}
+
+.progress-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(11, 31, 75, 0.10);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.progress-fill {
+  height: 10px;
+  background: linear-gradient(90deg, var(--blue-soft), var(--teal));
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.quiz-nav {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  margin-top: 14px;
 }

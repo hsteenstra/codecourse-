@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="lesson-shell">
+<div class="lesson-shell lesson-flow">
   {% set is_python_intro = (lang.id == 'python' and lesson.id == 1) %}
   <section class="stage">
     <div class="kicker">{{ lang.name }} • Lesson {{ lesson.id }}</div>
@@ -27,6 +27,10 @@
     </div>
   {% else %}
     <div class="lesson-steps">
+      <div class="progress-track" aria-hidden="true">
+        <div class="progress-fill" id="lesson-progress"></div>
+      </div>
+
       <div class="lesson-stepper" aria-hidden="true">
         <div class="stepper-pill active" data-step-pill="0">Start</div>
         {% if is_python_intro %}
@@ -105,13 +109,13 @@
             <div class="code-challenge">
               <div class="challenge-head">
                 <div class="challenge-title">Prompt</div>
-                <div class="challenge-text">Write a `print()` function that outputs: <strong>Hello, CodeCourse!</strong></div>
+                <div class="challenge-text" id="challenge-text">Write a print statement that outputs: <strong>Hello, CodeCourse!</strong></div>
               </div>
 
               <div class="challenge-grid">
                 <div>
                   <label>Python code</label>
-                  <textarea id="py-code" rows="8" spellcheck="false">print("Hello, CodeCourse!")</textarea>
+                  <textarea id="py-code" rows="8" spellcheck="false" placeholder="Type your code here..."></textarea>
                   <div class="code-actions">
                     <button class="btn btn-primary" type="button" id="check-code">Check</button>
                     <button class="btn btn-ghost" type="button" id="run-code">Run</button>
@@ -172,7 +176,11 @@
                 {% endfor %}
               </div>
             {% endfor %}
-            <button class="btn btn-primary" type="submit">Submit quiz</button>
+            <div class="quiz-nav">
+              <button class="btn btn-ghost" type="button" id="quiz-prev">Back</button>
+              <button class="btn btn-primary" type="button" id="quiz-next">Next</button>
+              <button class="btn btn-primary" type="submit" id="quiz-submit" style="display:none;">Submit quiz</button>
+            </div>
           </form>
         </div>
       </div>
@@ -208,6 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const steps = Array.from(document.querySelectorAll('.step'));
   const nextButtons = document.querySelectorAll('[data-next]');
   const stepperPills = Array.from(document.querySelectorAll('[data-step-pill]'));
+  const progressBar = document.getElementById('lesson-progress');
   let current = 0;
 
   function showStep(idx) {
@@ -215,6 +224,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const target = steps.find(s => Number(s.dataset.step) === idx);
     if (target) target.style.display = 'block';
     stepperPills.forEach(p => p.classList.toggle('active', Number(p.dataset.stepPill) === idx));
+    if (progressBar) {
+      const pct = Math.round((idx / (steps.length - 1)) * 100);
+      progressBar.style.width = `${pct}%`;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   nextButtons.forEach(btn => {
@@ -246,6 +260,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const output = document.getElementById('py-output');
   const status = document.getElementById('code-status');
   const nextBtn = document.getElementById('code-next');
+  const challengeText = document.getElementById('challenge-text');
+
+  const challenges = [
+    { prompt: "Write a print statement that outputs: <strong>Hello, CodeCourse!</strong>", expected: "Hello, CodeCourse!" },
+    { prompt: "Now print your name (example: <strong>Hello, Harper!</strong>)", expected: null },
+    { prompt: "Print a number: <strong>5</strong>", expected: "5" },
+  ];
+  let currentChallenge = 0;
+
+  function setChallenge(idx) {
+    if (!challengeText) return;
+    const c = challenges[idx];
+    challengeText.innerHTML = c.prompt;
+    if (codeInput) codeInput.value = "";
+    if (output) output.textContent = "Click Run to see the output.";
+    if (status) {
+      status.textContent = "Click Check when you're ready.";
+      status.classList.remove('success');
+    }
+    if (nextBtn) nextBtn.disabled = true;
+  }
 
   function runPythonPreview() {
     if (!codeInput || !output) return;
@@ -254,28 +289,88 @@ document.addEventListener('DOMContentLoaded', () => {
     if (match) {
       output.textContent = match[2];
     } else {
-      output.textContent = \"(no output yet)\";\n    }
+      output.textContent = \"(no output yet)\";
+    }
   }
 
   function checkPythonCode() {
     if (!codeInput || !status || !nextBtn) return;
     const code = codeInput.value;
-    const correct = /print\\s*\\(\\s*[\"']Hello,\\s*CodeCourse![\"']\\s*\\)/.test(code);
+    const c = challenges[currentChallenge];
+    let correct = false;
+    if (c.expected) {
+      const re = new RegExp(`print\\\\s*\\\\(\\\\s*['\\\"]${c.expected.replace(/[-/\\\\^$*+?.()|[\\]{}]/g, '\\\\$&')}['\\\"]\\\\s*\\\\)`);
+      correct = re.test(code);
+    } else {
+      correct = /print\\s*\\(\\s*['\"][^'\"]+['\"]\\s*\\)/.test(code);
+    }
     if (correct) {
       status.textContent = \"Great job! You got it right.\";
       status.classList.add('success');
-      nextBtn.disabled = false;
+      if (currentChallenge < challenges.length - 1) {
+        currentChallenge += 1;
+        setTimeout(() => {
+          setChallenge(currentChallenge);
+        }, 600);
+      } else {
+        nextBtn.disabled = false;
+      }
       if (window.confetti) {
         confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
       }
     } else {
-      status.textContent = \"Not quite. Make sure your print outputs: Hello, CodeCourse!\"; 
+      status.textContent = \"Not quite. Make sure your print uses print() and matches the prompt.\"; 
       status.classList.remove('success');
     }
   }
 
   if (runBtn) runBtn.addEventListener('click', runPythonPreview);
   if (checkBtn) checkBtn.addEventListener('click', checkPythonCode);
+
+  if (challengeText) {
+    setChallenge(0);
+  }
+
+  const quizBlocks = Array.from(document.querySelectorAll('.quiz-block'));
+  const quizPrev = document.getElementById('quiz-prev');
+  const quizNext = document.getElementById('quiz-next');
+  const quizSubmit = document.getElementById('quiz-submit');
+  let quizIndex = 0;
+
+  function showQuiz(idx) {
+    quizBlocks.forEach((b, i) => b.style.display = i === idx ? 'block' : 'none');
+    if (quizPrev) quizPrev.style.display = idx === 0 ? 'none' : 'inline-flex';
+    if (quizNext && quizSubmit) {
+      const last = idx === quizBlocks.length - 1;
+      quizNext.style.display = last ? 'none' : 'inline-flex';
+      quizSubmit.style.display = last ? 'inline-flex' : 'none';
+    }
+  }
+
+  function currentQuizAnswered() {
+    const block = quizBlocks[quizIndex];
+    if (!block) return false;
+    return !!block.querySelector('input[type=\"radio\"]:checked');
+  }
+
+  if (quizBlocks.length) {
+    showQuiz(0);
+  }
+
+  if (quizNext) {
+    quizNext.addEventListener('click', () => {
+      if (!currentQuizAnswered()) return;
+      quizIndex = Math.min(quizBlocks.length - 1, quizIndex + 1);
+      showQuiz(quizIndex);
+    });
+  }
+
+  if (quizPrev) {
+    quizPrev.addEventListener('click', () => {
+      quizIndex = Math.max(0, quizIndex - 1);
+      showQuiz(quizIndex);
+    });
+  }
 });
 </script>
 
