@@ -212,166 +212,166 @@ confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } });
 {% endif %}
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const steps = Array.from(document.querySelectorAll('.step'));
-  const nextButtons = document.querySelectorAll('[data-next]');
-  const stepperPills = Array.from(document.querySelectorAll('[data-step-pill]'));
-  const progressBar = document.getElementById('lesson-progress');
-  let current = 0;
+const steps = Array.from(document.querySelectorAll('.step'));
+const nextButtons = document.querySelectorAll('[data-next]');
+const stepperPills = Array.from(document.querySelectorAll('[data-step-pill]'));
+const progressBar = document.getElementById('lesson-progress');
+let current = 0;
 
-  function showStep(idx) {
-    steps.forEach(step => step.style.display = 'none');
-    const target = steps.find(s => Number(s.dataset.step) === idx);
-    if (target) target.style.display = 'block';
-    stepperPills.forEach(p => p.classList.toggle('active', Number(p.dataset.stepPill) === idx));
-    if (progressBar) {
-      const pct = Math.round((idx / (steps.length - 1)) * 100);
-      progressBar.style.width = `${pct}%`;
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+function showStep(idx) {
+  steps.forEach(step => step.style.display = 'none');
+  const target = steps.find(s => Number(s.dataset.step) === idx);
+  if (target) target.style.display = 'block';
+  stepperPills.forEach(p => p.classList.toggle('active', Number(p.dataset.stepPill) === idx));
+  if (progressBar) {
+    const pct = Math.round((idx / (steps.length - 1)) * 100);
+    progressBar.style.width = `${pct}%`;
   }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-  nextButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      current += 1;
-      showStep(current);
-    });
-  });
-
+if (steps.length) {
   showStep(0);
+}
 
-  const highlightBtn = document.getElementById('highlight-btn');
-  const readingText = document.getElementById('reading-text');
-  if (highlightBtn && readingText) {
-    highlightBtn.addEventListener('click', () => {
-      const selection = window.getSelection();
-      if (!selection || selection.rangeCount === 0) return;
-      const range = selection.getRangeAt(0);
-      if (!readingText.contains(range.commonAncestorContainer)) return;
-      const mark = document.createElement('mark');
-      try { range.surroundContents(mark); } catch (err) { return; }
-      selection.removeAllRanges();
-    });
-  }
-
-  const checkBtn = document.getElementById('check-code');
-  const runBtn = document.getElementById('run-code');
-  const codeInput = document.getElementById('py-code');
-  const output = document.getElementById('py-output');
-  const status = document.getElementById('code-status');
-  const nextBtn = document.getElementById('code-next');
-  const challengeText = document.getElementById('challenge-text');
-
-  const challenges = [
-    { prompt: "Write a print statement that outputs: <strong>Hello, CodeCourse!</strong>", expected: "Hello, CodeCourse!" },
-    { prompt: "Now print your name (example: <strong>Hello, Harper!</strong>)", expected: null },
-    { prompt: "Print a number: <strong>5</strong>", expected: "5" },
-  ];
-  let currentChallenge = 0;
-
-  function setChallenge(idx) {
-    if (!challengeText) return;
-    const c = challenges[idx];
-    challengeText.innerHTML = c.prompt;
-    if (codeInput) codeInput.value = "";
-    if (output) output.textContent = "Click Run to see the output.";
-    if (status) {
-      status.textContent = "Click Check when you're ready.";
-      status.classList.remove('success');
-    }
-    if (nextBtn) nextBtn.disabled = true;
-  }
-
-  function runPythonPreview() {
-    if (!codeInput || !output) return;
-    const code = codeInput.value;
-    const match = code.match(/print\\s*\\(\\s*([\"'])(.*?)\\1\\s*\\)/);
-    if (match) {
-      output.textContent = match[2];
-    } else {
-      output.textContent = \"(no output yet)\";
-    }
-  }
-
-  function checkPythonCode() {
-    if (!codeInput || !status || !nextBtn) return;
-    const code = codeInput.value;
-    const c = challenges[currentChallenge];
-    let correct = false;
-    if (c.expected) {
-      const re = new RegExp(`print\\\\s*\\\\(\\\\s*['\\\"]${c.expected.replace(/[-/\\\\^$*+?.()|[\\]{}]/g, '\\\\$&')}['\\\"]\\\\s*\\\\)`);
-      correct = re.test(code);
-    } else {
-      correct = /print\\s*\\(\\s*['\"][^'\"]+['\"]\\s*\\)/.test(code);
-    }
-    if (correct) {
-      status.textContent = \"Great job! You got it right.\";
-      status.classList.add('success');
-      if (currentChallenge < challenges.length - 1) {
-        currentChallenge += 1;
-        setTimeout(() => {
-          setChallenge(currentChallenge);
-        }, 600);
-      } else {
-        nextBtn.disabled = false;
-      }
-      if (window.confetti) {
-        confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
-      }
-    } else {
-      status.textContent = \"Not quite. Make sure your print uses print() and matches the prompt.\"; 
-      status.classList.remove('success');
-    }
-  }
-
-  if (runBtn) runBtn.addEventListener('click', runPythonPreview);
-  if (checkBtn) checkBtn.addEventListener('click', checkPythonCode);
-
-  if (challengeText) {
-    setChallenge(0);
-  }
-
-  const quizBlocks = Array.from(document.querySelectorAll('.quiz-block'));
-  const quizPrev = document.getElementById('quiz-prev');
-  const quizNext = document.getElementById('quiz-next');
-  const quizSubmit = document.getElementById('quiz-submit');
-  let quizIndex = 0;
-
-  function showQuiz(idx) {
-    quizBlocks.forEach((b, i) => b.style.display = i === idx ? 'block' : 'none');
-    if (quizPrev) quizPrev.style.display = idx === 0 ? 'none' : 'inline-flex';
-    if (quizNext && quizSubmit) {
-      const last = idx === quizBlocks.length - 1;
-      quizNext.style.display = last ? 'none' : 'inline-flex';
-      quizSubmit.style.display = last ? 'inline-flex' : 'none';
-    }
-  }
-
-  function currentQuizAnswered() {
-    const block = quizBlocks[quizIndex];
-    if (!block) return false;
-    return !!block.querySelector('input[type=\"radio\"]:checked');
-  }
-
-  if (quizBlocks.length) {
-    showQuiz(0);
-  }
-
-  if (quizNext) {
-    quizNext.addEventListener('click', () => {
-      if (!currentQuizAnswered()) return;
-      quizIndex = Math.min(quizBlocks.length - 1, quizIndex + 1);
-      showQuiz(quizIndex);
-    });
-  }
-
-  if (quizPrev) {
-    quizPrev.addEventListener('click', () => {
-      quizIndex = Math.max(0, quizIndex - 1);
-      showQuiz(quizIndex);
-    });
-  }
+nextButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    current += 1;
+    showStep(current);
+  });
 });
+
+const highlightBtn = document.getElementById('highlight-btn');
+const readingText = document.getElementById('reading-text');
+if (highlightBtn && readingText) {
+  highlightBtn.addEventListener('click', () => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+    const range = selection.getRangeAt(0);
+    if (!readingText.contains(range.commonAncestorContainer)) return;
+    const mark = document.createElement('mark');
+    try { range.surroundContents(mark); } catch (err) { return; }
+    selection.removeAllRanges();
+  });
+}
+
+const checkBtn = document.getElementById('check-code');
+const runBtn = document.getElementById('run-code');
+const codeInput = document.getElementById('py-code');
+const output = document.getElementById('py-output');
+const status = document.getElementById('code-status');
+const nextBtn = document.getElementById('code-next');
+const challengeText = document.getElementById('challenge-text');
+
+const challenges = [
+  { prompt: "Write a print statement that outputs: <strong>Hello, CodeCourse!</strong>", expected: "Hello, CodeCourse!" },
+  { prompt: "Now print your name (example: <strong>Hello, Harper!</strong>)", expected: null },
+  { prompt: "Print a number: <strong>5</strong>", expected: "5" },
+];
+let currentChallenge = 0;
+
+function setChallenge(idx) {
+  if (!challengeText) return;
+  const c = challenges[idx];
+  challengeText.innerHTML = c.prompt;
+  if (codeInput) codeInput.value = "";
+  if (output) output.textContent = "Click Run to see the output.";
+  if (status) {
+    status.textContent = "Click Check when you're ready.";
+    status.classList.remove('success');
+  }
+  if (nextBtn) nextBtn.disabled = true;
+}
+
+function runPythonPreview() {
+  if (!codeInput || !output) return;
+  const code = codeInput.value;
+  const match = code.match(/print\\s*\\(\\s*([\"'])(.*?)\\1\\s*\\)/);
+  if (match) {
+    output.textContent = match[2];
+  } else {
+    output.textContent = "(no output yet)";
+  }
+}
+
+function checkPythonCode() {
+  if (!codeInput || !status || !nextBtn) return;
+  const code = codeInput.value;
+  const c = challenges[currentChallenge];
+  let correct = false;
+  if (c.expected) {
+    const re = new RegExp(`print\\\\s*\\\\(\\\\s*['\\\"]${c.expected.replace(/[-/\\\\^$*+?.()|[\\]{}]/g, '\\\\$&')}['\\\"]\\\\s*\\\\)`);
+    correct = re.test(code);
+  } else {
+    correct = /print\\s*\\(\\s*['\"][^'\"]+['\"]\\s*\\)/.test(code);
+  }
+  if (correct) {
+    status.textContent = "Great job! You got it right.";
+    status.classList.add('success');
+    if (currentChallenge < challenges.length - 1) {
+      currentChallenge += 1;
+      setTimeout(() => {
+        setChallenge(currentChallenge);
+      }, 600);
+    } else {
+      nextBtn.disabled = false;
+    }
+    if (window.confetti) {
+      confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
+    }
+  } else {
+    status.textContent = "Not quite. Make sure your print uses print() and matches the prompt.";
+    status.classList.remove('success');
+  }
+}
+
+if (runBtn) runBtn.addEventListener('click', runPythonPreview);
+if (checkBtn) checkBtn.addEventListener('click', checkPythonCode);
+
+if (challengeText) {
+  setChallenge(0);
+}
+
+const quizBlocks = Array.from(document.querySelectorAll('.quiz-block'));
+const quizPrev = document.getElementById('quiz-prev');
+const quizNext = document.getElementById('quiz-next');
+const quizSubmit = document.getElementById('quiz-submit');
+let quizIndex = 0;
+
+function showQuiz(idx) {
+  quizBlocks.forEach((b, i) => b.style.display = i === idx ? 'block' : 'none');
+  if (quizPrev) quizPrev.style.display = idx === 0 ? 'none' : 'inline-flex';
+  if (quizNext && quizSubmit) {
+    const last = idx === quizBlocks.length - 1;
+    quizNext.style.display = last ? 'none' : 'inline-flex';
+    quizSubmit.style.display = last ? 'inline-flex' : 'none';
+  }
+}
+
+function currentQuizAnswered() {
+  const block = quizBlocks[quizIndex];
+  if (!block) return false;
+  return !!block.querySelector('input[type=\"radio\"]:checked');
+}
+
+if (quizBlocks.length) {
+  showQuiz(0);
+}
+
+if (quizNext) {
+  quizNext.addEventListener('click', () => {
+    if (!currentQuizAnswered()) return;
+    quizIndex = Math.min(quizBlocks.length - 1, quizIndex + 1);
+    showQuiz(quizIndex);
+  });
+}
+
+if (quizPrev) {
+  quizPrev.addEventListener('click', () => {
+    quizIndex = Math.max(0, quizIndex - 1);
+    showQuiz(quizIndex);
+  });
+}
 </script>
 
 {% endblock %}
