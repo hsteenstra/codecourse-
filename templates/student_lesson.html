@@ -204,83 +204,79 @@ confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } });
 {% endif %}
 
 <script>
-const steps = Array.from(document.querySelectorAll('.step'));
-const nextButtons = document.querySelectorAll('[data-next]');
-const stepperPills = Array.from(document.querySelectorAll('[data-step-pill]'));
-let current = 0;
+document.addEventListener('DOMContentLoaded', () => {
+  const steps = Array.from(document.querySelectorAll('.step'));
+  const nextButtons = document.querySelectorAll('[data-next]');
+  const stepperPills = Array.from(document.querySelectorAll('[data-step-pill]'));
+  let current = 0;
 
-function showStep(idx) {
-  steps.forEach(step => step.style.display = 'none');
-  const target = steps.find(s => Number(s.dataset.step) === idx);
-  if (target) target.style.display = 'block';
+  function showStep(idx) {
+    steps.forEach(step => step.style.display = 'none');
+    const target = steps.find(s => Number(s.dataset.step) === idx);
+    if (target) target.style.display = 'block';
+    stepperPills.forEach(p => p.classList.toggle('active', Number(p.dataset.stepPill) === idx));
+  }
 
-  stepperPills.forEach(p => p.classList.toggle('active', Number(p.dataset.stepPill) === idx));
-}
-
-nextButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    current += 1;
-    showStep(current);
+  nextButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      current += 1;
+      showStep(current);
+    });
   });
+
+  showStep(0);
+
+  const highlightBtn = document.getElementById('highlight-btn');
+  const readingText = document.getElementById('reading-text');
+  if (highlightBtn && readingText) {
+    highlightBtn.addEventListener('click', () => {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return;
+      const range = selection.getRangeAt(0);
+      if (!readingText.contains(range.commonAncestorContainer)) return;
+      const mark = document.createElement('mark');
+      try { range.surroundContents(mark); } catch (err) { return; }
+      selection.removeAllRanges();
+    });
+  }
+
+  const checkBtn = document.getElementById('check-code');
+  const runBtn = document.getElementById('run-code');
+  const codeInput = document.getElementById('py-code');
+  const output = document.getElementById('py-output');
+  const status = document.getElementById('code-status');
+  const nextBtn = document.getElementById('code-next');
+
+  function runPythonPreview() {
+    if (!codeInput || !output) return;
+    const code = codeInput.value;
+    const match = code.match(/print\\s*\\(\\s*([\"'])(.*?)\\1\\s*\\)/);
+    if (match) {
+      output.textContent = match[2];
+    } else {
+      output.textContent = \"(no output yet)\";\n    }
+  }
+
+  function checkPythonCode() {
+    if (!codeInput || !status || !nextBtn) return;
+    const code = codeInput.value;
+    const correct = /print\\s*\\(\\s*[\"']Hello,\\s*CodeCourse![\"']\\s*\\)/.test(code);
+    if (correct) {
+      status.textContent = \"Great job! You got it right.\";
+      status.classList.add('success');
+      nextBtn.disabled = false;
+      if (window.confetti) {
+        confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
+      }
+    } else {
+      status.textContent = \"Not quite. Make sure your print outputs: Hello, CodeCourse!\"; 
+      status.classList.remove('success');
+    }
+  }
+
+  if (runBtn) runBtn.addEventListener('click', runPythonPreview);
+  if (checkBtn) checkBtn.addEventListener('click', checkPythonCode);
 });
-
-showStep(0);
-
-const highlightBtn = document.getElementById('highlight-btn');
-const readingText = document.getElementById('reading-text');
-if (highlightBtn && readingText) {
-  highlightBtn.addEventListener('click', () => {
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return;
-    const range = selection.getRangeAt(0);
-    if (!readingText.contains(range.commonAncestorContainer)) return;
-    const mark = document.createElement('mark');
-    try { range.surroundContents(mark); } catch (err) { return; }
-    selection.removeAllRanges();
-  });
-}
-
-const checkBtn = document.getElementById('check-code');
-const runBtn = document.getElementById('run-code');
-const codeInput = document.getElementById('py-code');
-const output = document.getElementById('py-output');
-const status = document.getElementById('code-status');
-const nextBtn = document.getElementById('code-next');
-
-function runPythonPreview() {
-  if (!codeInput || !output) return;
-  const code = codeInput.value;
-  const match = code.match(/print\\s*\\((.*)\\)/);
-  if (match) {
-    let inner = match[1].trim();
-    if ((inner.startsWith('"') && inner.endsWith('"')) || (inner.startsWith(\"'\") && inner.endsWith(\"'\"))) {
-      inner = inner.slice(1, -1);
-    }
-    output.textContent = inner;
-  } else {
-    output.textContent = \"(no output)\";
-  }
-}
-
-function checkPythonCode() {
-  if (!codeInput || !status || !nextBtn) return;
-  const code = codeInput.value;
-  const correct = /print\\s*\\(/.test(code) && /Hello,\\s*CodeCourse!/.test(code);
-  if (correct) {
-    status.textContent = \"Great job! You got it right.\";
-    status.classList.add('success');
-    nextBtn.disabled = false;
-    if (window.confetti) {
-      confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
-    }
-  } else {
-    status.textContent = \"Not quite. Make sure your print outputs: Hello, CodeCourse!\"; 
-    status.classList.remove('success');
-  }
-}
-
-if (runBtn) runBtn.addEventListener('click', runPythonPreview);
-if (checkBtn) checkBtn.addEventListener('click', checkPythonCode);
 </script>
 
 {% endblock %}
